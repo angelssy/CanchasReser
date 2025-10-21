@@ -3,28 +3,24 @@
     "id": 1,
     "nombre": "Laptop Lenovo",
     "descripcion": "Laptop 14\" - 8GB RAM - 256GB SSD",
-    "precio": 799.99,
-    "imagen": "https://picsum.photos/seed/1/300/200"
+    "precio": 799.99
   },
   {
     "id": 2,
     "nombre": "Mouse Logitech",
     "descripcion": "Mouse inalámbrico, sensor 1600 DPI",
-    "precio": 25.5,
-    "imagen": "https://picsum.photos/seed/2/300/200"
+    "precio": 25.5
   },
   {
     "id": 3,
     "nombre": "Auriculares",
     "descripcion": "Auriculares Bluetooth con cancelación de ruido",
-    "precio": 59.99,
-    "imagen": "https://picsum.photos/seed/3/300/200"
+    "precio": 59.99
   },
   {
     "id": 4,
     "nombre": "Teclado mecánico",
     "descripcion": "Teclado compacto, switches azules",
-    "precio": 89.0,
-    "imagen": "https://picsum.photos/seed/4/300/200"
+    "precio": 89.0
   }
 ]

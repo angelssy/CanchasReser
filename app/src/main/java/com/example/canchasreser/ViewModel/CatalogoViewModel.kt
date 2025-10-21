@@ -1,11 +1,15 @@
 package com.example.canchasreser.ViewModel
 
-
-
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.canchasreser.Model.Producto
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.example.canchasreser.Model.Producto
+import kotlinx.coroutines.launch
 
 class CatalogoViewModel : ViewModel() {
 
@@ -15,18 +19,24 @@ class CatalogoViewModel : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
-    init {
-        // Datos de prueba
-        _productos.value = listOf(
-            Producto(1, "Cancha 1", "Descripción cancha 1", 2000.0, "https://via.placeholder.com/150"),
-            Producto(2, "Cancha 2", "Descripción cancha 2", 2500.0, "https://via.placeholder.com/150"),
-            Producto(3, "Cancha 3", "Descripción cancha 3", 3000.0, "https://via.placeholder.com/150")
-        )
-    }
+    fun cargarProductos(context: Context) {
+        viewModelScope.launch {
+            _loading.value = true
+            delay(800) // Simulación de carga
 
-    // Función que podrías mantener para futuras cargas de datos reales
-    fun cargarProductos() {
-        // Aquí puedes conectar a tu API o base de datos
+            try {
+                val json = context.assets.open("productos.json")
+                    .bufferedReader().use { it.readText() }
+
+                val itemType = object : TypeToken<List<Producto>>() {}.type
+                _productos.value = Gson().fromJson(json, itemType)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _productos.value = emptyList()
+            }
+
+            _loading.value = false
+        }
     }
 
     fun buscarProductoPorId(id: Int): Producto? {

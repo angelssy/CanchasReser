@@ -4,19 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.canchasreser.ViewModel.CatalogoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
-    // DerivedStateOf asegura que el producto se actualice si cambia la lista
-    val producto by remember(viewModel.productos) {
-        derivedStateOf { viewModel.buscarProductoPorId(productoId) }
-    }
+    val producto = viewModel.buscarProductoPorId(productoId)
 
     Scaffold(
         topBar = {
@@ -29,7 +27,8 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 val painter = rememberAsyncImagePainter(p.imagen)
@@ -38,7 +37,8 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
                     contentDescription = p.nombre,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(200.dp),
+                    contentScale = ContentScale.Crop
                 )
 
                 Text(text = p.nombre, style = MaterialTheme.typography.titleLarge)
@@ -46,14 +46,18 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
                 Text(text = p.descripcion ?: "", style = MaterialTheme.typography.bodyMedium)
 
                 Button(
-                    onClick = { /* TODO: agregar al carrito */ },
+                    onClick = {
+                        // TODO: agregar lógica para carrito o reserva
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Agregar al carrito")
                 }
             }
         } ?: Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text("Producto no encontrado")

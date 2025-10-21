@@ -21,6 +21,13 @@ import com.example.canchasreser.ViewModel.CatalogoViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
+    val context = LocalContext.current
+
+    // ✅ Carga los productos cuando se abre la pantalla
+    LaunchedEffect(Unit) {
+        viewModel.cargarProductos(context)
+    }
+
     val productos by viewModel.productos.collectAsState()
     val loading by viewModel.loading.collectAsState()
 
@@ -33,7 +40,10 @@ fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             if (loading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
             } else {
@@ -67,14 +77,18 @@ fun ProductoCard(producto: Producto, onClick: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val painter = rememberAsyncImagePainter(producto.imagen)
-            Image(
-                painter = painter,
-                contentDescription = producto.nombre,
-                modifier = Modifier.size(80.dp),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+            // ✅ Si el campo imagen es opcional
+            producto.imagen?.let { imagenUrl ->
+                val painter = rememberAsyncImagePainter(imagenUrl)
+                Image(
+                    painter = painter,
+                    contentDescription = producto.nombre,
+                    modifier = Modifier.size(80.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+
             Column(Modifier.weight(1f)) {
                 Text(text = producto.nombre, style = MaterialTheme.typography.titleMedium)
                 Text(text = "$${producto.precio}", style = MaterialTheme.typography.bodyMedium)
