@@ -47,7 +47,6 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
 
                 Button(
                     onClick = {
-                        // TODO: agregar lógica para carrito o reserva
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
