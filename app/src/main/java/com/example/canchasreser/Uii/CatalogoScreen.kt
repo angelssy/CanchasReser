@@ -1,12 +1,10 @@
 package com.example.canchasreser.Uii
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,19 +17,12 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.canchasreser.Model.Producto
 import com.example.canchasreser.ViewModel.CatalogoViewModel
-import androidx.compose.runtime.collectAsState
 
-@OptIn(ExperimentalMaterial3Api::class) // ✅ Se agregó aquí la anotación necesaria
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
-    val context = LocalContext.current
     val productos by viewModel.productos.collectAsState()
     val loading by viewModel.loading.collectAsState()
-
-    // Cargar productos solo una vez
-    LaunchedEffect(Unit) {
-        viewModel.cargarProductos(context)
-    }
 
     Scaffold(
         topBar = {

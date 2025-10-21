@@ -1,34 +1,24 @@
 package com.example.canchasreser
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.canchasreser.Uii.CatalogoScreen
-import com.example.canchasreser.Uii.DetalleProductoScreen
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import com.example.canchasreser.Uii.AppNavHost
 import com.example.canchasreser.ViewModel.CatalogoViewModel
 
 class MainActivity : ComponentActivity() {
+
+    // Instancia del ViewModel compartido
+    private val viewModel: CatalogoViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            val viewModel = remember { CatalogoViewModel() }
-
-            NavHost(navController = navController, startDestination = "catalogo") {
-                composable("catalogo") {
-                    CatalogoScreen(navController = navController, viewModel = viewModel)
-                }
-                composable("detalle/{productoId}") { backStack ->
-                    val idStr = backStack.arguments?.getString("productoId")
-                    val id = idStr?.toIntOrNull() ?: -1
-                    DetalleProductoScreen(productoId = id, viewModel = viewModel)
-                }
+            MaterialTheme {
+                AppNavHost(viewModel = viewModel)
             }
         }
     }
