@@ -13,17 +13,17 @@ import com.example.canchasreser.ViewModel.CatalogoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
-    val producto = viewModel.buscarProductoPorId(productoId)
+fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel) {
+    val cancha = viewModel.buscarCanchaPorId(canchaId)
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(producto?.nombre ?: "Detalle") }
+                title = { Text(cancha?.nombre ?: "Detalle de Cancha") }
             )
         }
     ) { padding ->
-        producto?.let { p ->
+        cancha?.let { c ->
             Column(
                 modifier = Modifier
                     .padding(padding)
@@ -31,26 +31,31 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val painter = rememberAsyncImagePainter(p.imagen)
+                val painter = rememberAsyncImagePainter(c.imagen)
                 Image(
                     painter = painter,
-                    contentDescription = p.nombre,
+                    contentDescription = c.nombre,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
                     contentScale = ContentScale.Crop
                 )
 
-                Text(text = p.nombre, style = MaterialTheme.typography.titleLarge)
-                Text(text = "$${p.precio}", style = MaterialTheme.typography.titleMedium)
-                Text(text = p.descripcion ?: "", style = MaterialTheme.typography.bodyMedium)
+                Text(text = c.nombre, style = MaterialTheme.typography.titleLarge)
+                Text(text = "Precio por hora: $${c.precioHora}", style = MaterialTheme.typography.titleMedium)
+
+                c.descripcion?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
+                c.tipoSuperficie?.let { Text(text = "Superficie: $it", style = MaterialTheme.typography.bodyMedium) }
+                c.dimensiones?.let { Text(text = "Dimensiones: $it", style = MaterialTheme.typography.bodyMedium) }
+                c.medidas?.let { Text(text = "Medidas: $it", style = MaterialTheme.typography.bodyMedium) }
+                c.jugadores?.let { Text(text = "Jugadores: $it", style = MaterialTheme.typography.bodyMedium) }
+                c.ubicacion?.let { Text(text = "Ubicación: $it", style = MaterialTheme.typography.bodyMedium) }
 
                 Button(
-                    onClick = {
-                    },
+                    onClick = { /* Lógica futura */ },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Agregar al carrito")
+                    Text("Reservar cancha")
                 }
             }
         } ?: Box(
@@ -59,7 +64,7 @@ fun DetalleProductoScreen(productoId: Int, viewModel: CatalogoViewModel) {
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Producto no encontrado")
+            Text("Cancha no encontrada")
         }
     }
 }

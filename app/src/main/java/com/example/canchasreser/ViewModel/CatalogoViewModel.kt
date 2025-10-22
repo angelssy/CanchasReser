@@ -3,7 +3,7 @@ package com.example.canchasreser.ViewModel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.canchasreser.Model.Producto
+import com.example.canchasreser.model.Cancha
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class CatalogoViewModel : ViewModel() {
 
-    private val _productos = MutableStateFlow<List<Producto>>(emptyList())
-    val productos: StateFlow<List<Producto>> = _productos
+    private val _productos = MutableStateFlow<List<Cancha>>(emptyList())
+    val productos: StateFlow<List<Cancha>> = _productos
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
@@ -25,10 +25,10 @@ class CatalogoViewModel : ViewModel() {
             delay(800) // Simulación de carga
 
             try {
-                val json = context.assets.open("productos.json")
+                val json = context.assets.open("canchas.json")
                     .bufferedReader().use { it.readText() }
 
-                val itemType = object : TypeToken<List<Producto>>() {}.type
+                val itemType = object : TypeToken<List<Cancha>>() {}.type
                 _productos.value = Gson().fromJson(json, itemType)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -39,7 +39,7 @@ class CatalogoViewModel : ViewModel() {
         }
     }
 
-    fun buscarProductoPorId(id: Int): Producto? {
+    fun buscarCanchaPorId(id: Int): Cancha? {
         return _productos.value.find { it.id == id }
     }
 }

@@ -15,26 +15,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.canchasreser.Model.Producto
 import com.example.canchasreser.ViewModel.CatalogoViewModel
+import com.example.canchasreser.model.Cancha
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
     val context = LocalContext.current
 
-    // ✅ Carga los productos cuando se abre la pantalla
     LaunchedEffect(Unit) {
         viewModel.cargarProductos(context)
     }
 
-    val productos by viewModel.productos.collectAsState()
+    val canchas by viewModel.productos.collectAsState()
     val loading by viewModel.loading.collectAsState()
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Catálogo") }
+                title = { Text("Catálogo de Canchas") }
             )
         }
     ) { padding ->
@@ -52,9 +51,9 @@ fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(items = productos, key = { it.id }) { producto ->
-                        ProductoCard(producto = producto) {
-                            navController.navigate("detalle/${producto.id}")
+                    items(items = canchas, key = { it.id }) { cancha ->
+                        CanchaCard(cancha = cancha) {
+                            navController.navigate("detalle/${cancha.id}")
                         }
                     }
                 }
@@ -64,7 +63,7 @@ fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
 }
 
 @Composable
-fun ProductoCard(producto: Producto, onClick: () -> Unit) {
+fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,12 +76,11 @@ fun ProductoCard(producto: Producto, onClick: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // ✅ Si el campo imagen es opcional
-            producto.imagen?.let { imagenUrl ->
+            cancha.imagen?.let { imagenUrl ->
                 val painter = rememberAsyncImagePainter(imagenUrl)
                 Image(
                     painter = painter,
-                    contentDescription = producto.nombre,
+                    contentDescription = cancha.nombre,
                     modifier = Modifier.size(80.dp),
                     contentScale = ContentScale.Crop
                 )
@@ -90,9 +88,9 @@ fun ProductoCard(producto: Producto, onClick: () -> Unit) {
             }
 
             Column(Modifier.weight(1f)) {
-                Text(text = producto.nombre, style = MaterialTheme.typography.titleMedium)
-                Text(text = "$${producto.precio}", style = MaterialTheme.typography.bodyMedium)
-                producto.descripcion?.let {
+                Text(text = cancha.nombre, style = MaterialTheme.typography.titleMedium)
+                Text(text = "$${cancha.precioHora}", style = MaterialTheme.typography.bodyMedium)
+                cancha.descripcion?.let {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = it,
