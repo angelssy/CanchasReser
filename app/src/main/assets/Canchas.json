@@ -9,7 +9,7 @@
     "descripcion": "Cancha de 11 jugadores, césped natural.",
     "ubicacion": "Av. Siempre Viva 123, Santiago",
     "precioHora": 15000,
-    "imagen": "/img/futbol.jpg"
+    "imagen": "futbol"
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "descripcion": "Una Cancha diseñado para albergar los torneos más exigentes y ofrecer una experiencia inolvidable tanto para atletas como para espectadores.",
     "ubicacion": "Calle Principal 456, Puente Alto",
     "precioHora": 10000,
-    "imagen": "/img/voley.jpg"
+    "imagen": "voley"
   },
   {
     "id": 3,
@@ -33,7 +33,7 @@
     "descripcion": "Cancha de nivel profesional diseñado para el alto rendimiento. Con su diseño moderno y colores vibrantes, esta cancha no solo ofrece una superficie de juego excepcional, sino que también crea un ambiente vibrante y energético para jugadores y espectadores..",
     "ubicacion": "Av. Deportes 789, Santiago",
     "precioHora": 12000,
-    "imagen": "/img/tenis.jpg"
+    "imagen": "tenis"
   },
   {
     "id": 4,
@@ -45,6 +45,6 @@
     "descripcion": "Cancha sintética, ideal para entrenamientos.",
     "ubicacion": "Av. Deportes 789, Santiago",
     "precioHora": 12000,
-    "imagen": "/img/bass.jpg"
+    "imagen": "basquet"
   }
 ]

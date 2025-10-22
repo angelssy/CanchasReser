@@ -25,7 +25,7 @@ class CatalogoViewModel : ViewModel() {
             delay(800) // Simulación de carga
 
             try {
-                val json = context.assets.open("canchas.json")
+                val json = context.assets.open("Canchas.json")
                     .bufferedReader().use { it.readText() }
 
                 val itemType = object : TypeToken<List<Cancha>>() {}.type

@@ -76,16 +76,25 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            cancha.imagen?.let { imagenUrl ->
-                val painter = rememberAsyncImagePainter(imagenUrl)
-                Image(
-                    painter = painter,
-                    contentDescription = cancha.nombre,
-                    modifier = Modifier.size(80.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-            }
+            // Cargar la imagen desde recursos locales
+            val painter = rememberAsyncImagePainter(
+                model = cancha.imagen?.let {
+                    // Si la imagen es una URL, cargarla directamente
+                    if (it.startsWith("http")) {
+                        it
+                    } else {
+                        // Cargar desde recursos locales
+                        "android.resource://com.example.canchasreser/drawable/$it"
+                    }
+                }
+            )
+            Image(
+                painter = painter,
+                contentDescription = cancha.nombre,
+                modifier = Modifier.size(80.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(Modifier.weight(1f)) {
                 Text(text = cancha.nombre, style = MaterialTheme.typography.titleMedium)
