@@ -11,8 +11,8 @@ class AuthViewModel : ViewModel() {
     var usuarioActual = mutableStateOf<String?>(null)
 
     // Ahora toma los nuevos parámetros
-    fun registrar(nombre: String, email: String, direccion: String, rut: String, password: String) {
-        val nuevoUsuario = Usuario(nombre, email, direccion, rut, password)
+    fun registrar(nombre: String, email: String, rut: String, password: String) {
+        val nuevoUsuario = Usuario(nombre, email, rut, password)
 
         // Llamada a FakeDatabase para registrar el usuario
         if (FakeDatabase.registrar(nuevoUsuario)) {

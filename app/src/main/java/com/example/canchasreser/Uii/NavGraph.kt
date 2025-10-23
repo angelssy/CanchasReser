@@ -13,6 +13,7 @@ import com.example.canchasreser.ViewModel.CatalogoViewModel
 import com.example.canchasreser.viewmodel.AuthViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.lifecycle.viewmodel.compose.viewModel  // Asegúrate de importar viewModel
 
 @Composable
 fun NavGraph(catalogoViewModel: CatalogoViewModel, authViewModel: AuthViewModel) {

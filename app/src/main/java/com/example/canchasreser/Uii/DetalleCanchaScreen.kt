@@ -3,17 +3,19 @@ package com.example.canchasreser.Uii
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.canchasreser.ViewModel.CatalogoViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)  // Aceptamos la API experimental
 @Composable
-fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel) {
+fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel = viewModel()) {
+    // Obtener los detalles de la cancha por su ID desde el ViewModel
     val cancha = viewModel.buscarCanchaPorId(canchaId)
 
     Scaffold(
@@ -31,28 +33,48 @@ fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel) {
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Cargar la imagen usando rememberAsyncImagePainter
                 val painter = rememberAsyncImagePainter(c.imagen)
                 Image(
                     painter = painter,
                     contentDescription = c.nombre,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(250.dp),
                     contentScale = ContentScale.Crop
                 )
 
                 Text(text = c.nombre, style = MaterialTheme.typography.titleLarge)
                 Text(text = "Precio por hora: $${c.precioHora}", style = MaterialTheme.typography.titleMedium)
 
-                c.descripcion?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
-                c.tipoSuperficie?.let { Text(text = "Superficie: $it", style = MaterialTheme.typography.bodyMedium) }
-                c.dimensiones?.let { Text(text = "Dimensiones: $it", style = MaterialTheme.typography.bodyMedium) }
-                c.medidas?.let { Text(text = "Medidas: $it", style = MaterialTheme.typography.bodyMedium) }
-                c.jugadores?.let { Text(text = "Jugadores: $it", style = MaterialTheme.typography.bodyMedium) }
-                c.ubicacion?.let { Text(text = "Ubicación: $it", style = MaterialTheme.typography.bodyMedium) }
+                c.descripcion?.let { desc ->
+                    Text(text = desc, style = MaterialTheme.typography.bodyMedium)
+                }
+
+                c.tipoSuperficie?.let { superficie ->
+                    Text(text = "Superficie: $superficie", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                c.dimensiones?.let { dim ->
+                    Text(text = "Dimensiones: $dim", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                c.medidas?.let { med ->
+                    Text(text = "Medidas: $med", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                c.jugadores?.let { jug ->
+                    Text(text = "Jugadores: $jug", style = MaterialTheme.typography.bodyMedium)
+                }
+
+                c.ubicacion?.let { ubi ->
+                    Text(text = "Ubicación: $ubi", style = MaterialTheme.typography.bodyMedium)
+                }
 
                 Button(
-                    onClick = { /* Lógica futura */ },
+                    onClick = {
+                        // Aquí puedes agregar lógica para reserva o carrito en el futuro
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Reservar cancha")

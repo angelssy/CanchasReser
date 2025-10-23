@@ -11,4 +11,5 @@ data class Cancha(
     val ubicacion: String?,
     val precioHora: Double,
     val imagen: String? // URL o nombre del recurso
+
 )
