@@ -10,11 +10,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.canchasreser.ViewModel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CarritoViewModel
+import com.example.canchasreser.Utils.formatPrecio
 
-@OptIn(ExperimentalMaterial3Api::class)  // Aceptamos la API experimental
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel = viewModel()) {
+fun DetalleCanchaScreen(
+    canchaId: Int,
+    viewModel: CatalogoViewModel = viewModel(),
+    carritoViewModel: CarritoViewModel = viewModel(),
+    navController: androidx.navigation.NavController
+) {
     // Obtener los detalles de la cancha por su ID desde el ViewModel
     val cancha = viewModel.buscarCanchaPorId(canchaId)
 
@@ -33,8 +40,13 @@ fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel = viewModel(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Cargar la imagen usando rememberAsyncImagePainter
-                val painter = rememberAsyncImagePainter(c.imagen)
+                // Cargar la imagen igual que en la Card
+                val painter = rememberAsyncImagePainter(
+                    model = c.imagen?.let {
+                        if (it.startsWith("http")) it
+                        else "android.resource://com.example.canchasreser/drawable/$it"
+                    }
+                )
                 Image(
                     painter = painter,
                     contentDescription = c.nombre,
@@ -45,7 +57,12 @@ fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel = viewModel(
                 )
 
                 Text(text = c.nombre, style = MaterialTheme.typography.titleLarge)
-                Text(text = "Precio por hora: $${c.precioHora}", style = MaterialTheme.typography.titleMedium)
+
+                // Precio formateado
+                Text(
+                    text = "Precio por hora: ${formatPrecio(c.precioHora)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
 
                 c.descripcion?.let { desc ->
                     Text(text = desc, style = MaterialTheme.typography.bodyMedium)
@@ -71,9 +88,11 @@ fun DetalleCanchaScreen(canchaId: Int, viewModel: CatalogoViewModel = viewModel(
                     Text(text = "Ubicación: $ubi", style = MaterialTheme.typography.bodyMedium)
                 }
 
+                // Botón Reservar cancha -> agrega al carrito y navega al CarritoScreen
                 Button(
                     onClick = {
-                        // Aquí puedes agregar lógica para reserva o carrito en el futuro
+                        carritoViewModel.agregarAlCarrito(c)
+                        navController.navigate("carrito")
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {

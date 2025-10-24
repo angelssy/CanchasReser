@@ -1,4 +1,4 @@
-package com.example.canchasreser.ViewModel
+package com.example.canchasreser.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.canchasreser.ViewModel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CatalogoViewModel
 
 
 class CatalogoViewModel : ViewModel() {

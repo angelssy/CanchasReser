@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.example.canchasreser.viewmodel.AuthViewModel
 
-import com.example.canchasreser.ViewModel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CatalogoViewModel
 import com.example.canchasreser.Uii.NavGraph
 
 class MainActivity : ComponentActivity() {

@@ -15,8 +15,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.canchasreser.ViewModel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CatalogoViewModel
 import com.example.canchasreser.model.Cancha
+import com.example.canchasreser.Utils.formatPrecio
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,11 +80,9 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
             // Cargar la imagen desde recursos locales
             val painter = rememberAsyncImagePainter(
                 model = cancha.imagen?.let {
-                    // Si la imagen es una URL, cargarla directamente
                     if (it.startsWith("http")) {
                         it
                     } else {
-                        // Cargar desde recursos locales
                         "android.resource://com.example.canchasreser/drawable/$it"
                     }
                 }
@@ -98,7 +97,8 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
 
             Column(Modifier.weight(1f)) {
                 Text(text = cancha.nombre, style = MaterialTheme.typography.titleMedium)
-                Text(text = "$${cancha.precioHora}", style = MaterialTheme.typography.bodyMedium)
+                // Precio formateado a chileno
+                Text(text = formatPrecio(cancha.precioHora), style = MaterialTheme.typography.bodyMedium)
                 cancha.descripcion?.let {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
