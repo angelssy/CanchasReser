@@ -36,6 +36,14 @@ fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
             CenterAlignedTopAppBar(
                 title = { Text("Catálogo de Canchas") }
             )
+        },
+        floatingActionButton = {
+            // Botón flotante para testing: Back Office
+            ExtendedFloatingActionButton(
+                onClick = { navController.navigate("backOffice") }
+            ) {
+                Text("Back Office")
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
@@ -97,7 +105,6 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
 
             Column(Modifier.weight(1f)) {
                 Text(text = cancha.nombre, style = MaterialTheme.typography.titleMedium)
-                // Precio formateado a chileno
                 Text(text = formatPrecio(cancha.precioHora), style = MaterialTheme.typography.bodyMedium)
                 cancha.descripcion?.let {
                     Spacer(modifier = Modifier.height(4.dp))

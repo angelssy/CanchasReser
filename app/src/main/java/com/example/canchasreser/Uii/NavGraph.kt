@@ -2,7 +2,7 @@ package com.example.canchasreser.Uii
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +81,30 @@ fun NavGraph(
         // Pantalla de compra exitosa
         composable("compraExitosa") {
             CompraExitosaScreen(navController = navController)
+        }
+
+        // Pantalla de compra rechazada
+        composable(
+            route = "compraRechazada/{mensajeError}",
+            arguments = listOf(navArgument("mensajeError") {
+                defaultValue = "Hubo un error con tu compra ❌"
+            })
+        ) { backStackEntry ->
+            val mensajeError = backStackEntry.arguments?.getString("mensajeError")
+                ?: "Hubo un error con tu compra ❌"
+            CompraRechazadaScreen(navController = navController, mensajeError = mensajeError)
+        }
+
+        // Pantalla de Back Office (solo visual)
+        composable("backOffice") {
+            if (authViewModel.usuarioActual.value == null) {
+                navController.navigate("login")
+            } else {
+                BackOfficeScreen(
+                    navController = navController,
+                    canchas = catalogoViewModel.productos.value
+                )
+            }
         }
     }
 }

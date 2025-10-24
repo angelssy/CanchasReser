@@ -29,7 +29,6 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
     var invitadosError by remember { mutableStateOf(false) }
     var fechaError by remember { mutableStateOf(false) }
     var horaError by remember { mutableStateOf(false) }
-    var cardError by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -58,6 +57,7 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             // Nombre
             OutlinedTextField(
                 value = nombre,
@@ -134,41 +134,37 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 value = cardNumber,
                 onValueChange = { input ->
                     val digitsOnly = input.filter { it.isDigit() }
-                    val truncated = if (digitsOnly.length > 13) digitsOnly.substring(0, 13) else digitsOnly
-                    cardNumber = truncated
-                    cardError = (input != truncated || truncated.isBlank())
+                    cardNumber = digitsOnly
+
+                    // Redirigir a compra rechazada si excede 13 dígitos
+                    if (digitsOnly.length > 13) {
+                        navController.navigate("compraRechazada/${"Número de tarjeta excede 13 dígitos"}")
+                    }
                 },
                 label = { Text("Número de tarjeta") },
                 placeholder = { Text("e.g. 1234567890123") },
                 modifier = Modifier.fillMaxWidth(),
-                isError = cardError,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 )
             )
-            if (cardError) {
-                Text(
-                    text = "Solo se permiten dígitos y máximo 13 caracteres.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Botón Confirmar
             Button(
                 onClick = {
-                    // Validaciones
                     nombreError = nombre.isBlank() || !nombre.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))
                     invitadosError = invitados.isBlank()
                     fechaError = fecha.isBlank()
                     horaError = hora.isBlank()
-                    cardError = cardNumber.isBlank()
+                    val cardError = cardNumber.isBlank() || cardNumber.length > 13
 
-                    if (!(nombreError || invitadosError || fechaError || horaError || cardError)) {
+                    if (cardError) {
+                        navController.navigate("compraRechazada/${"Número de tarjeta inválido"}")
+                    } else if (!(nombreError || invitadosError || fechaError || horaError)) {
                         carritoViewModel.vaciarCarrito()
                         navController.navigate("compraExitosa")
                     }
@@ -180,7 +176,6 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
         }
     }
 }
-
 
 @Composable
 fun HoraSelector(hora: String, onHoraSelected: (String) -> Unit) {
@@ -194,9 +189,7 @@ fun HoraSelector(hora: String, onHoraSelected: (String) -> Unit) {
             label = { Text("Hora de reserva") },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    expanded = true
-                },
+                .clickable { expanded = true },
             readOnly = true,
             enabled = false
         )
