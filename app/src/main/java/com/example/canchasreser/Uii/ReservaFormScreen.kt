@@ -3,10 +3,13 @@ package com.example.canchasreser.Uii
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.canchasreser.viewmodel.CarritoViewModel
@@ -19,12 +22,18 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
     var invitados by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
     var hora by remember { mutableStateOf("") }
-    var pago by remember { mutableStateOf("") }
+    var cardNumber by remember { mutableStateOf("") }
+
+    // Estados de error
+    var nombreError by remember { mutableStateOf(false) }
+    var invitadosError by remember { mutableStateOf(false) }
+    var fechaError by remember { mutableStateOf(false) }
+    var horaError by remember { mutableStateOf(false) }
+    var cardError by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // -------------------- DatePicker --------------------
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -35,9 +44,8 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
         calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Limitar fecha mínima a octubre 2025
     val minCalendar = Calendar.getInstance()
-    minCalendar.set(2025, Calendar.OCTOBER, 1)
+    minCalendar.set(2025, Calendar.OCTOBER, 27)
     datePickerDialog.datePicker.minDate = minCalendar.timeInMillis
 
     Scaffold(
@@ -50,49 +58,120 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Nombre
             OutlinedTextField(
                 value = nombre,
-                onValueChange = { nombre = it },
+                onValueChange = {
+                    nombre = it
+                    nombreError = false
+                },
                 label = { Text("Nombre del responsable") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = nombreError
             )
+            if (nombreError) {
+                Text(
+                    text = if (nombre.isBlank()) "Este campo es obligatorio" else "Solo se permiten letras",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
+            // Invitados
             OutlinedTextField(
                 value = invitados,
-                onValueChange = { invitados = it },
+                onValueChange = {
+                    invitados = it
+                    invitadosError = false
+                },
                 label = { Text("Lista de invitados") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = invitadosError
             )
+            if (invitadosError) {
+                Text(
+                    text = "Este campo es obligatorio",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
-            // -------------------- Campo Fecha --------------------
+            // Fecha
             OutlinedTextField(
                 value = fecha,
-                onValueChange = { fecha = it },
+                onValueChange = { },
                 label = { Text("Fecha de reserva") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { datePickerDialog.show() },
                 enabled = false,
-                readOnly = true
+                readOnly = true,
+                isError = fechaError
             )
+            if (fechaError) {
+                Text(
+                    text = "Debe seleccionar una fecha",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
-            // -------------------- Campo Hora --------------------
-            HoraSelector(hora = hora, onHoraSelected = { hora = it })
+            // Hora
+            HoraSelector(hora = hora, onHoraSelected = {
+                hora = it
+                horaError = false
+            })
+            if (horaError) {
+                Text(
+                    text = "Debe seleccionar una hora",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
+            // Número de tarjeta
             OutlinedTextField(
-                value = pago,
-                onValueChange = { pago = it },
-                label = { Text("Pago") },
-                modifier = Modifier.fillMaxWidth()
+                value = cardNumber,
+                onValueChange = { input ->
+                    val digitsOnly = input.filter { it.isDigit() }
+                    val truncated = if (digitsOnly.length > 13) digitsOnly.substring(0, 13) else digitsOnly
+                    cardNumber = truncated
+                    cardError = (input != truncated || truncated.isBlank())
+                },
+                label = { Text("Número de tarjeta") },
+                placeholder = { Text("e.g. 1234567890123") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = cardError,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                )
             )
+            if (cardError) {
+                Text(
+                    text = "Solo se permiten dígitos y máximo 13 caracteres.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Botón Confirmar
             Button(
                 onClick = {
-                    // Vaciar carrito y navegar a compra exitosa
-                    carritoViewModel.vaciarCarrito()
-                    navController.navigate("compraExitosa")
+                    // Validaciones
+                    nombreError = nombre.isBlank() || !nombre.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))
+                    invitadosError = invitados.isBlank()
+                    fechaError = fecha.isBlank()
+                    horaError = hora.isBlank()
+                    cardError = cardNumber.isBlank()
+
+                    if (!(nombreError || invitadosError || fechaError || horaError || cardError)) {
+                        carritoViewModel.vaciarCarrito()
+                        navController.navigate("compraExitosa")
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -102,11 +181,11 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
     }
 }
 
-// -------------------- Selector de hora --------------------
+
 @Composable
 fun HoraSelector(hora: String, onHoraSelected: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val horas = (10..22).map { String.format("%02d:00", it) } // horas de 10 a 22
+    val horas = (10..22).map { String.format("%02d:00", it) }
 
     Box {
         OutlinedTextField(
@@ -115,7 +194,9 @@ fun HoraSelector(hora: String, onHoraSelected: (String) -> Unit) {
             label = { Text("Hora de reserva") },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = true },
+                .clickable {
+                    expanded = true
+                },
             readOnly = true,
             enabled = false
         )
