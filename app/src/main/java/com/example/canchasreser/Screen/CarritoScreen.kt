@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +24,7 @@ fun CarritoScreen(navController: NavController, viewModel: CarritoViewModel) {
         bottomBar = {
             if (items.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    // Botón para ir al formulario de reserva
+
                     Button(
                         onClick = { navController.navigate("reservaForm") },
                         modifier = Modifier
@@ -34,7 +34,7 @@ fun CarritoScreen(navController: NavController, viewModel: CarritoViewModel) {
                         Text("Reservar Cancha")
                     }
 
-                    // Botón para completar compra directa
+
                     Button(
                         onClick = {
                             navController.navigate("compraExitosa")

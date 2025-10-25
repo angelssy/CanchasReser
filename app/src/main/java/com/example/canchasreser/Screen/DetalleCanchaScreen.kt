@@ -1,4 +1,4 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,7 +22,7 @@ fun DetalleCanchaScreen(
     carritoViewModel: CarritoViewModel = viewModel(),
     navController: androidx.navigation.NavController
 ) {
-    // Obtener los detalles de la cancha por su ID desde el ViewModel
+
     val cancha = viewModel.buscarCanchaPorId(canchaId)
 
     Scaffold(
@@ -40,7 +40,7 @@ fun DetalleCanchaScreen(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Cargar la imagen igual que en la Card
+
                 val painter = rememberAsyncImagePainter(
                     model = c.imagen?.let {
                         if (it.startsWith("http")) it
@@ -58,7 +58,7 @@ fun DetalleCanchaScreen(
 
                 Text(text = c.nombre, style = MaterialTheme.typography.titleLarge)
 
-                // Precio formateado
+
                 Text(
                     text = "Precio por hora: ${formatPrecio(c.precioHora)}",
                     style = MaterialTheme.typography.titleMedium
@@ -88,7 +88,7 @@ fun DetalleCanchaScreen(
                     Text(text = "Ubicación: $ubi", style = MaterialTheme.typography.bodyMedium)
                 }
 
-                // Botón Reservar cancha -> agrega al carrito y navega al CarritoScreen
+
                 Button(
                     onClick = {
                         carritoViewModel.agregarAlCarrito(c)

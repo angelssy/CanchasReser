@@ -1,4 +1,4 @@
-package com.example.canchasreser.Model
+package com.example.canchasreser.model
 
 data class Usuario(
     val nombre: String,

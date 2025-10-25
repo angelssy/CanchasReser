@@ -1,4 +1,4 @@
-package com.example.canchasreser.Model
+package com.example.canchasreser.model
 
 object FakeDatabase {
     private val usuarios = mutableListOf<Usuario>()

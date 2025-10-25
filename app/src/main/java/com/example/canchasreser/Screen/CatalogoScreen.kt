@@ -1,4 +1,4 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,11 +38,22 @@ fun CatalogoScreen(navController: NavController, viewModel: CatalogoViewModel) {
             )
         },
         floatingActionButton = {
-            // Botón flotante para testing: Back Office
-            ExtendedFloatingActionButton(
-                onClick = { navController.navigate("backOffice") }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Back Office")
+                // Botón para agregar producto
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate("agregarProducto") }
+                ) {
+                    Text("Agregar Producto")
+                }
+
+                // Botón para Back Office
+                ExtendedFloatingActionButton(
+                    onClick = { navController.navigate("backOffice") }
+                ) {
+                    Text("Back Office")
+                }
             }
         }
     ) { padding ->
@@ -85,14 +96,9 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Cargar la imagen desde recursos locales
             val painter = rememberAsyncImagePainter(
                 model = cancha.imagen?.let {
-                    if (it.startsWith("http")) {
-                        it
-                    } else {
-                        "android.resource://com.example.canchasreser/drawable/$it"
-                    }
+                    if (it.startsWith("http")) it else "android.resource://com.example.canchasreser/drawable/$it"
                 }
             )
             Image(
@@ -102,17 +108,12 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(12.dp))
-
             Column(Modifier.weight(1f)) {
                 Text(text = cancha.nombre, style = MaterialTheme.typography.titleMedium)
                 Text(text = formatPrecio(cancha.precioHora), style = MaterialTheme.typography.bodyMedium)
                 cancha.descripcion?.let {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 2
-                    )
+                    Text(text = it, style = MaterialTheme.typography.bodySmall, maxLines = 2)
                 }
             }
         }

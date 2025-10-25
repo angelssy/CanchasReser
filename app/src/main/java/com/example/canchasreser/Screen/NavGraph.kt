@@ -1,11 +1,9 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.canchasreser.viewmodel.CatalogoViewModel
 import com.example.canchasreser.viewmodel.AuthViewModel
 import com.example.canchasreser.viewmodel.CarritoViewModel
+import androidx.compose.ui.Modifier
 
 @Composable
 fun NavGraph(
@@ -26,17 +25,14 @@ fun NavGraph(
 
     NavHost(navController = navController, startDestination = "login") {
 
-        // Pantalla de login
         composable("login") {
             LoginScreen(navController = navController, viewModel = authViewModel)
         }
 
-        // Pantalla de registro
         composable("register") {
             RegisterScreen(navController = navController, viewModel = authViewModel)
         }
 
-        // Pantalla de catálogo
         composable("catalogo") {
             if (authViewModel.usuarioActual.value == null) {
                 navController.navigate("login")
@@ -45,7 +41,6 @@ fun NavGraph(
             }
         }
 
-        // Pantalla de detalle de cancha
         composable(
             route = "detalle/{canchaId}",
             arguments = listOf(navArgument("canchaId") { type = NavType.IntType })
@@ -61,50 +56,42 @@ fun NavGraph(
             } else {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = androidx.compose.ui.Alignment.Center
                 ) {
                     Text("Cancha no encontrada")
                 }
             }
         }
 
-        // Pantalla de carrito
         composable("carrito") {
             CarritoScreen(navController = navController, viewModel = carritoViewModel)
         }
 
-        // Pantalla de formulario de reserva
         composable("reservaForm") {
             ReservaFormScreen(navController = navController, carritoViewModel = carritoViewModel)
         }
 
-        // Pantalla de compra exitosa
         composable("compraExitosa") {
             CompraExitosaScreen(navController = navController)
         }
 
-        // Pantalla de compra rechazada
+        // Compra Rechazada con mensaje dinámico
         composable(
             route = "compraRechazada/{mensajeError}",
-            arguments = listOf(navArgument("mensajeError") {
-                defaultValue = "Hubo un error con tu compra ❌"
-            })
+            arguments = listOf(navArgument("mensajeError") { defaultValue = "Hubo un error con tu compra ❌" })
         ) { backStackEntry ->
-            val mensajeError = backStackEntry.arguments?.getString("mensajeError")
-                ?: "Hubo un error con tu compra ❌"
+            val mensajeError = backStackEntry.arguments?.getString("mensajeError") ?: ""
             CompraRechazadaScreen(navController = navController, mensajeError = mensajeError)
         }
 
-        // Pantalla de Back Office (solo visual)
+        // Pantalla Back Office
         composable("backOffice") {
-            if (authViewModel.usuarioActual.value == null) {
-                navController.navigate("login")
-            } else {
-                BackOfficeScreen(
-                    navController = navController,
-                    canchas = catalogoViewModel.productos.value
-                )
-            }
+            BackOfficeScreen(navController = navController, viewModel = catalogoViewModel)
+        }
+
+        // Pantalla Agregar Producto
+        composable("agregarProducto") {
+            AgregarProductoScreen(navController = navController)
         }
     }
 }

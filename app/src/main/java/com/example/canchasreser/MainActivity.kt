@@ -5,11 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import com.example.canchasreser.viewmodel.AuthViewModel
 
 import com.example.canchasreser.viewmodel.CatalogoViewModel
-import com.example.canchasreser.Uii.NavGraph
+import com.example.canchasreser.Screen.NavGraph
 
 class MainActivity : ComponentActivity() {
 

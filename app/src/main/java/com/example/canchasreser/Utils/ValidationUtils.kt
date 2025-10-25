@@ -1,13 +1,13 @@
 package com.example.canchasreser.Utils
 
 
-// ✅ Validar correo electrónico con Regex
+
 fun String.isValidEmail(): Boolean {
     val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$".toRegex()
     return this.isNotBlank() && emailRegex.matches(this)
 }
 
-// ✅ Validar RUT chileno (con dígito verificador y formato)
+
 fun String.isValidRut(): Boolean {
     val rutClean = this
         .replace(".", "")

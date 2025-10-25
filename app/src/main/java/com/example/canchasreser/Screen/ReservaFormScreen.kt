@@ -1,4 +1,4 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.clickable
@@ -24,7 +24,6 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
     var hora by remember { mutableStateOf("") }
     var cardNumber by remember { mutableStateOf("") }
 
-    // Estados de error
     var nombreError by remember { mutableStateOf(false) }
     var invitadosError by remember { mutableStateOf(false) }
     var fechaError by remember { mutableStateOf(false) }
@@ -61,40 +60,30 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
             // Nombre
             OutlinedTextField(
                 value = nombre,
-                onValueChange = {
-                    nombre = it
-                    nombreError = false
-                },
+                onValueChange = { nombre = it },
                 label = { Text("Nombre del responsable") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = nombreError
             )
-            if (nombreError) {
-                Text(
-                    text = if (nombre.isBlank()) "Este campo es obligatorio" else "Solo se permiten letras",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            if (nombreError) Text(
+                text = if (nombre.isBlank()) "Este campo es obligatorio" else "Solo se permiten letras",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
 
             // Invitados
             OutlinedTextField(
                 value = invitados,
-                onValueChange = {
-                    invitados = it
-                    invitadosError = false
-                },
+                onValueChange = { invitados = it },
                 label = { Text("Lista de invitados") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = invitadosError
             )
-            if (invitadosError) {
-                Text(
-                    text = "Este campo es obligatorio",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            if (invitadosError) Text(
+                text = "Este campo es obligatorio",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
 
             // Fecha
             OutlinedTextField(
@@ -108,39 +97,24 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 readOnly = true,
                 isError = fechaError
             )
-            if (fechaError) {
-                Text(
-                    text = "Debe seleccionar una fecha",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            if (fechaError) Text(
+                text = "Debe seleccionar una fecha",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
 
             // Hora
-            HoraSelector(hora = hora, onHoraSelected = {
-                hora = it
-                horaError = false
-            })
-            if (horaError) {
-                Text(
-                    text = "Debe seleccionar una hora",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            HoraSelector(hora = hora, onHoraSelected = { hora = it })
+            if (horaError) Text(
+                text = "Debe seleccionar una hora",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
 
             // Número de tarjeta
             OutlinedTextField(
                 value = cardNumber,
-                onValueChange = { input ->
-                    val digitsOnly = input.filter { it.isDigit() }
-                    cardNumber = digitsOnly
-
-                    // Redirigir a compra rechazada si excede 13 dígitos
-                    if (digitsOnly.length > 13) {
-                        navController.navigate("compraRechazada/${"Número de tarjeta excede 13 dígitos"}")
-                    }
-                },
+                onValueChange = { cardNumber = it.filter { c -> c.isDigit() } },
                 label = { Text("Número de tarjeta") },
                 placeholder = { Text("e.g. 1234567890123") },
                 modifier = Modifier.fillMaxWidth(),
@@ -156,14 +130,16 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
             // Botón Confirmar
             Button(
                 onClick = {
+                    // Validaciones
                     nombreError = nombre.isBlank() || !nombre.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))
                     invitadosError = invitados.isBlank()
                     fechaError = fecha.isBlank()
                     horaError = hora.isBlank()
                     val cardError = cardNumber.isBlank() || cardNumber.length > 13
 
+                    // Navegar según resultado
                     if (cardError) {
-                        navController.navigate("compraRechazada/${"Número de tarjeta inválido"}")
+                        navController.navigate("compraRechazada/${"Número de tarjeta inválido o excede 13 dígitos"}")
                     } else if (!(nombreError || invitadosError || fechaError || horaError)) {
                         carritoViewModel.vaciarCarrito()
                         navController.navigate("compraExitosa")

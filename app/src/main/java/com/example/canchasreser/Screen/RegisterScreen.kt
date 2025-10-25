@@ -1,4 +1,4 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -70,7 +70,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             Text("Registrar")
         }
 
-        // Mostrar el mensaje de registro
+
         Text(viewModel.mensaje.value, modifier = Modifier.padding(top = 10.dp))
 
         TextButton(onClick = { navController.navigate("login") }) {

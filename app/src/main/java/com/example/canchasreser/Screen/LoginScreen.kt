@@ -1,4 +1,4 @@
-package com.example.canchasreser.Uii
+package com.example.canchasreser.Screen
 
 
 import androidx.compose.foundation.layout.*
@@ -7,7 +7,6 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
 import com.example.canchasreser.viewmodel.AuthViewModel
 
 @Composable
@@ -30,7 +29,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
         Button(onClick = {
             if (viewModel.login(email, password)) {
-                navController.navigate("catalogo") // Navegar al catálogo si el login es exitoso
+                navController.navigate("catalogo")
             }
         }) {
             Text("Entrar")
