@@ -35,17 +35,6 @@ fun CarritoScreen(navController: NavController, viewModel: CarritoViewModel) {
                     }
 
 
-                    Button(
-                        onClick = {
-                            navController.navigate("compraExitosa")
-                            viewModel.vaciarCarrito()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                    ) {
-                        Text("Completar Compra (${formatPrecio(viewModel.total())})")
-                    }
                 }
             }
         }
