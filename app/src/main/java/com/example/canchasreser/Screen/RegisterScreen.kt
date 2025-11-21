@@ -1,80 +1,114 @@
 package com.example.canchasreser.Screen
 
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.canchasreser.R
 import com.example.canchasreser.viewmodel.AuthViewModel
-import com.example.canchasreser.Utils.isValidEmail
-import com.example.canchasreser.Utils.isValidRut
 
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
+
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var rut by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center
+            .background(Color(0xFF0A6E2F)),
+        contentAlignment = Alignment.Center
     ) {
-        Text("Registro", style = MaterialTheme.typography.titleLarge)
 
-        OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = rut,
-            onValueChange = { rut = it },
-            label = { Text("RUT (Ej: 12.345.678-9)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = {
-                when {
-                    nombre.isBlank() -> viewModel.mensaje.value = "El nombre es obligatorio"
-                    !email.isValidEmail() -> viewModel.mensaje.value = "Correo inválido"
-                    !rut.isValidRut() -> viewModel.mensaje.value = "RUT inválido"
-                    password.isBlank() -> viewModel.mensaje.value = "La contraseña es obligatoria"
-                    else -> viewModel.registrar(nombre, email, rut, password)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.85f)
         ) {
-            Text("Registrar")
-        }
 
+            Image(
+                painter = painterResource(id = R.drawable.fff),
+                contentDescription = null,
+                modifier = Modifier.size(120.dp)
+            )
 
-        Text(viewModel.mensaje.value, modifier = Modifier.padding(top = 10.dp))
+            Text(
+                text = "Canchas Reser",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
+            )
 
-        TextButton(onClick = { navController.navigate("login") }) {
-            Text("¿Ya tienes cuenta? Inicia sesión")
+            // Nombre
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = { nombre = it },
+                label = { Text("Nombre completo") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Email
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Correo electrónico") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // RUT
+            OutlinedTextField(
+                value = rut,
+                onValueChange = { rut = it },
+                label = { Text("RUT") },
+                placeholder = { Text("Ej: 12345678-9") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Contraseña
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    viewModel.registrar(nombre, email, rut, password)
+                    navController.navigate("login")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp),
+                colors = ButtonDefaults.buttonColors(Color.White),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Registrarse", color = Color(0xFF0A6E2F), fontSize = 18.sp)
+            }
         }
     }
 }

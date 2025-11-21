@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import com.example.canchasreser.viewmodel.AuthViewModel
-
+import com.example.canchasreser.ui.theme.CanchasTheme
 import com.example.canchasreser.viewmodel.CatalogoViewModel
 import com.example.canchasreser.Screen.NavGraph
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            CanchasTheme {
                 NavGraph(catalogoViewModel = catalogoViewModel, authViewModel = authViewModel)
             }
         }
