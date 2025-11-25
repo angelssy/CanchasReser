@@ -1,93 +1,80 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+
 
 package com.example.canchasreser.Screen
-
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.canchasreser.model.Carrito
 import com.example.canchasreser.viewmodel.CarritoViewModel
-import com.example.canchasreser.Utils.formatPrecio
+import androidx.compose.ui.Alignment
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CarritoScreen(navController: NavController, viewModel: CarritoViewModel) {
-    val items = remember { viewModel.items }
+fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewModel) {
+    // Consumimos la lista de jugadores desde el ViewModel
+    val jugadores by carritoViewModel.jugadores.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Carrito de Compras") }) },
-        bottomBar = {
-            if (items.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-
-                    Button(
-                        onClick = { navController.navigate("reservaForm") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp)
-                    ) {
-                        Text("Reservar Cancha")
-                    }
-
-
-                }
-            }
-        }
+        topBar = { TopAppBar(title = { Text("Carrito / Jugadores") }) }
     ) { padding ->
-        if (items.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) {
-                Text("No hay productos en el carrito")
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(items) { item ->
-                    CarritoItemRow(item = item, viewModel = viewModel)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CarritoItemRow(item: Carrito, viewModel: CarritoViewModel) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column {
-                Text(item.cancha.nombre, style = MaterialTheme.typography.titleMedium)
-                Text("Precio: ${formatPrecio(item.cancha.precioHora)} x ${item.cantidad}")
+            Text("Jugadores seleccionados:", style = MaterialTheme.typography.titleLarge)
+
+            if (jugadores.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Aún no hay jugadores. Agrega con el botón.")
+                }
+            } else {
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    jugadores.forEach { id ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Jugador $id", style = MaterialTheme.typography.bodyLarge)
+                            }
+                        }
+                    }
+                }
             }
-            Row {
-                Button(onClick = { viewModel.actualizarCantidad(item, item.cantidad - 1) }) {
-                    Text("-")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(onClick = { carritoViewModel.agregarJugador() }, modifier = Modifier.weight(1f)) {
+                    Text("Agregar jugador")
                 }
-                Spacer(modifier = Modifier.width(4.dp))
-                Button(onClick = { viewModel.actualizarCantidad(item, item.cantidad + 1) }) {
-                    Text("+")
+
+                Button(onClick = { carritoViewModel.eliminarJugador() }, modifier = Modifier.weight(1f)) {
+                    Text("Eliminar jugador")
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = { navController.navigate("reservaForm") },
+                enabled = jugadores.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Continuar (Completar nombres)")
             }
         }
     }

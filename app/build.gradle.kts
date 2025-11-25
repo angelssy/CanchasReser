@@ -87,4 +87,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.compose.ui:ui:1.4.0")
     implementation("androidx.compose.material3:material3:1.0.0-alpha01")
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+// OkHttp logging (opcional, útil para debug)
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+// Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
+// Coil (para cargar imágenes)
+    implementation ("io.coil-kt:coil-compose:2.5.0")
+
 }

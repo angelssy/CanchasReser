@@ -64,7 +64,7 @@ fun NavGraph(
         }
 
         composable("carrito") {
-            CarritoScreen(navController = navController, viewModel = carritoViewModel)
+            CarritoScreen(navController = navController, carritoViewModel = carritoViewModel)
         }
 
         composable("reservaForm") {

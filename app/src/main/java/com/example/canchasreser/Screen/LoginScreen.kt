@@ -1,26 +1,25 @@
 package com.example.canchasreser.Screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.canchasreser.R
 import com.example.canchasreser.viewmodel.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
@@ -30,7 +29,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A6E2F)),
+            .background(Color(0xFF66BB6A)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -52,20 +51,43 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
             )
 
+            // EMAIL
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Correo electrónico") },
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = Color(0xFF0A6E2F),
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color(0xFF0A6E2F),
+                    unfocusedIndicatorColor = Color(0xFF388E3C),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // CONTRASEÑA
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Contraseña") },
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = Color(0xFF0A6E2F),
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color(0xFF0A6E2F),
+                    unfocusedIndicatorColor = Color(0xFF388E3C),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp)
             )
@@ -75,10 +97,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             Button(
                 onClick = {
                     val success = viewModel.login(email, password)
-
-                    if (success) {
-                        navController.navigate("catalogo")
-                    }
+                    if (success) navController.navigate("catalogo")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,9 +116,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(top = 10.dp)
-                    .clickable {
-                        navController.navigate("register")
-                    }
+                    .clickable { navController.navigate("register") }
             )
         }
     }
