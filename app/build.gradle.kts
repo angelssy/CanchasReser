@@ -102,5 +102,6 @@ dependencies {
 
 // Coil (para cargar imágenes)
     implementation ("io.coil-kt:coil-compose:2.5.0")
-
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.0")
 }
