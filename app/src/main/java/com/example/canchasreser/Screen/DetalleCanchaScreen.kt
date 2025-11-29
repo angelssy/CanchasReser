@@ -10,7 +10,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.canchasreser.viewmodel.CatalogoViewModel
+import com.example.canchasreser.viewmodel.CanchasViewModel
 import com.example.canchasreser.viewmodel.CarritoViewModel
 import com.example.canchasreser.Utils.formatPrecio
 
@@ -18,12 +18,13 @@ import com.example.canchasreser.Utils.formatPrecio
 @Composable
 fun DetalleCanchaScreen(
     canchaId: Int,
-    viewModel: CatalogoViewModel = viewModel(),
+    viewModel: CanchasViewModel = viewModel(),
     carritoViewModel: CarritoViewModel = viewModel(),
     navController: androidx.navigation.NavController
 ) {
 
-    val cancha = viewModel.buscarCanchaPorId(canchaId)
+    val cancha = viewModel.canchas.value.find { it.id == canchaId }
+
 
     Scaffold(
         topBar = {
@@ -32,7 +33,9 @@ fun DetalleCanchaScreen(
             )
         }
     ) { padding ->
+
         cancha?.let { c ->
+
             Column(
                 modifier = Modifier
                     .padding(padding)
@@ -42,11 +45,9 @@ fun DetalleCanchaScreen(
             ) {
 
                 val painter = rememberAsyncImagePainter(
-                    model = c.imagen?.let {
-                        if (it.startsWith("http")) it
-                        else "android.resource://com.example.canchasreser/drawable/$it"
-                    }
+                    model = "https://via.placeholder.com/600"
                 )
+
                 Image(
                     painter = painter,
                     contentDescription = c.nombre,
@@ -56,38 +57,16 @@ fun DetalleCanchaScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                Text(text = c.nombre, style = MaterialTheme.typography.titleLarge)
+                Text(c.nombre, style = MaterialTheme.typography.titleLarge)
+                Text("Precio por hora: ${formatPrecio(c.precioHora)}",
+                    style = MaterialTheme.typography.titleMedium)
 
-
-                Text(
-                    text = "Precio por hora: ${formatPrecio(c.precioHora)}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                c.descripcion?.let { desc ->
-                    Text(text = desc, style = MaterialTheme.typography.bodyMedium)
-                }
-
-                c.tipoSuperficie?.let { superficie ->
-                    Text(text = "Superficie: $superficie", style = MaterialTheme.typography.bodyMedium)
-                }
-
-                c.dimensiones?.let { dim ->
-                    Text(text = "Dimensiones: $dim", style = MaterialTheme.typography.bodyMedium)
-                }
-
-                c.medidas?.let { med ->
-                    Text(text = "Medidas: $med", style = MaterialTheme.typography.bodyMedium)
-                }
-
-                c.jugadores?.let { jug ->
-                    Text(text = "Jugadores: $jug", style = MaterialTheme.typography.bodyMedium)
-                }
-
-                c.ubicacion?.let { ubi ->
-                    Text(text = "Ubicación: $ubi", style = MaterialTheme.typography.bodyMedium)
-                }
-
+                c.descripcion?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                c.tipoSuperficie?.let { Text("Superficie: $it") }
+                c.dimensiones?.let { Text("Dimensiones: $it") }
+                c.medidas?.let { Text("Medidas: $it") }
+                c.jugadores?.let { Text("Jugadores: $it") }
+                c.ubicacion?.let { Text("Ubicación: $it") }
 
                 Button(
                     onClick = {
@@ -99,6 +78,7 @@ fun DetalleCanchaScreen(
                     Text("Reservar cancha")
                 }
             }
+
         } ?: Box(
             modifier = Modifier
                 .padding(padding)

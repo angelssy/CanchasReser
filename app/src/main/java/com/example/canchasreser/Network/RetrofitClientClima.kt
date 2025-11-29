@@ -1,17 +1,16 @@
 package com.example.canchasreser.Network
 
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitClient {
+object RetrofitClientClima {
 
-    private const val BASE_URL = "https://canchas-reser-api-1.onrender.com/"
-
-    val api: ApiService by lazy {
+    val api: ClimaApi by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl("https://api.openweathermap.org/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
+            .create(ClimaApi::class.java)
     }
 }
