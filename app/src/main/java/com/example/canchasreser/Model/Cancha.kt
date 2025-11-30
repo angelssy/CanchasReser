@@ -10,5 +10,5 @@ data class Cancha(
     val descripcion: String?,
     val ubicacion: String,
     val precioHora: Double,
-    val imagen: String?
+    val imagen: String
 )

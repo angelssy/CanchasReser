@@ -45,7 +45,7 @@ fun DetalleCanchaScreen(
             ) {
 
                 val painter = rememberAsyncImagePainter(
-                    model = "https://via.placeholder.com/600"
+                    model = c.imagen
                 )
 
                 Image(
@@ -56,7 +56,6 @@ fun DetalleCanchaScreen(
                         .height(250.dp),
                     contentScale = ContentScale.Crop
                 )
-
                 Text(c.nombre, style = MaterialTheme.typography.titleLarge)
                 Text("Precio por hora: ${formatPrecio(c.precioHora)}",
                     style = MaterialTheme.typography.titleMedium)

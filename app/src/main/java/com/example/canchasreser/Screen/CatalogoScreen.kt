@@ -71,7 +71,6 @@ fun CatalogoScreen(navController: NavController, viewModel: CanchasViewModel ) {
         }
     }
 }
-
 @Composable
 fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
     Card(
@@ -83,7 +82,7 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
         Row(modifier = Modifier.padding(12.dp)) {
 
             val painter = rememberAsyncImagePainter(
-                model = "https://via.placeholder.com/150"
+                model = cancha.imagen
             )
 
             Image(
@@ -101,5 +100,7 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
             }
         }
     }
-
 }
+
+
+
