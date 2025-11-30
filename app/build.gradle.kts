@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -92,7 +93,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    implementation("androidx.compose.material:material:1.6.0")
 // OkHttp logging (opcional, útil para debug)
     implementation ("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
@@ -108,9 +109,11 @@ dependencies {
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 // Room
     implementation ("androidx.room:room-runtime:2.6.0")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }

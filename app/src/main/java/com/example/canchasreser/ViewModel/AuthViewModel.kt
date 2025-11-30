@@ -10,26 +10,28 @@ class AuthViewModel : ViewModel() {
     var mensaje = mutableStateOf("")
     var usuarioActual = mutableStateOf<String?>(null)
 
-
     fun registrar(nombre: String, email: String, rut: String, password: String) {
         val nuevoUsuario = Usuario(nombre, email, rut, password)
 
-
         if (FakeDatabase.registrar(nuevoUsuario)) {
-            mensaje.value = "Registro exitoso "
+            mensaje.value = "Registro exitoso"
         } else {
-            mensaje.value = "El usuario ya existe "
+            mensaje.value = "El usuario ya existe"
         }
     }
 
     fun login(email: String, password: String): Boolean {
         return if (FakeDatabase.login(email, password)) {
             usuarioActual.value = email
-            mensaje.value = "Inicio de sesión exitoso "
+            mensaje.value = "Inicio de sesión exitoso"
             true
         } else {
-            mensaje.value = "Credenciales inválidas "
+            mensaje.value = "Credenciales inválidas"
             false
         }
+    }
+
+    fun esAdmin(): Boolean {
+        return usuarioActual.value == "ADMIN"
     }
 }

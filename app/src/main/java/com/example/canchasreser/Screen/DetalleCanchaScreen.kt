@@ -2,6 +2,7 @@ package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,9 +11,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.canchasreser.Utils.formatPrecio
 import com.example.canchasreser.viewmodel.CanchasViewModel
 import com.example.canchasreser.viewmodel.CarritoViewModel
-import com.example.canchasreser.Utils.formatPrecio
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,18 +28,39 @@ fun DetalleCanchaScreen(
 
     val cancha = viewModel.canchas.value.find { it.id == canchaId }
 
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(cancha?.nombre ?: "Detalle de Cancha") }
+                title = { Text(cancha?.nombre ?: "Detalle de Cancha") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                }
             )
+        },
+
+        bottomBar = {     // ⭐ Botón siempre visible
+            cancha?.let {
+                Button(
+                    onClick = {
+                        carritoViewModel.agregarAlCarrito(it)
+                        navController.navigate("carrito")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .padding(12.dp)
+                ) {
+                    Text("Reservar cancha")
+                }
+            }
         }
     ) { padding ->
 
         cancha?.let { c ->
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(padding)
                     .padding(16.dp)
@@ -44,38 +68,28 @@ fun DetalleCanchaScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
-                val painter = rememberAsyncImagePainter(
-                    model = c.imagen
-                )
-
-                Image(
-                    painter = painter,
-                    contentDescription = c.nombre,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Text(c.nombre, style = MaterialTheme.typography.titleLarge)
-                Text("Precio por hora: ${formatPrecio(c.precioHora)}",
-                    style = MaterialTheme.typography.titleMedium)
-
-                c.descripcion?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-                c.tipoSuperficie?.let { Text("Superficie: $it") }
-                c.dimensiones?.let { Text("Dimensiones: $it") }
-                c.medidas?.let { Text("Medidas: $it") }
-                c.jugadores?.let { Text("Jugadores: $it") }
-                c.ubicacion?.let { Text("Ubicación: $it") }
-
-                Button(
-                    onClick = {
-                        carritoViewModel.agregarAlCarrito(c)
-                        navController.navigate("carrito")
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Reservar cancha")
+                item {
+                    Image(
+                        painter = rememberAsyncImagePainter(c.imagen),
+                        contentDescription = c.nombre,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp),
+                        contentScale = ContentScale.Crop
+                    )
                 }
+
+                item { Text(c.nombre, style = MaterialTheme.typography.titleLarge) }
+                item { Text("Precio por hora: ${formatPrecio(c.precioHora)}", style = MaterialTheme.typography.titleMedium) }
+
+                item { c.descripcion?.let { Text(it) } }
+                item { Text("Superficie: ${c.tipoSuperficie}") }
+                item { Text("Dimensiones: ${c.dimensiones}") }
+                item { Text("Medidas: ${c.medidas}") }
+                item { Text("Jugadores: ${c.jugadores}") }
+                item { Text("Ubicación: ${c.ubicacion}") }
+
+                item { Spacer(modifier = Modifier.height(100.dp)) }
             }
 
         } ?: Box(

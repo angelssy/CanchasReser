@@ -1,6 +1,8 @@
 package com.example.canchasreser.Screen
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.canchasreser.navigation.BottomBar
 import com.example.canchasreser.viewmodel.AuthViewModel
 import com.example.canchasreser.viewmodel.CanchasViewModel
 import com.example.canchasreser.viewmodel.CarritoViewModel
@@ -38,26 +41,59 @@ fun NavGraph(
             RegisterScreen(navController, authViewModel)
         }
 
-        // CATÁLOGO
-        composable("catalogo") {
-
-            if (authViewModel.usuarioActual.value == null) {
-                navController.navigate("login")
-            } else {
-                CatalogoScreen(
-                    navController = navController,
-                    viewModel = canchasViewModel
-                )
+        // INICIO (con barra)
+        composable("inicio") {
+            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
+                InicioScreen(navController)
             }
         }
 
-        // DETALLE
-        composable(
-            route = "detalle/{id}",
-            arguments = listOf(navArgument("id") { type = NavType.IntType })
-        ) { backStackEntry ->
+        // CATÁLOGO (con barra)
+        composable("catalogo") {
+            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
+                CatalogoScreen(navController, canchasViewModel)
+            }
+        }
 
-            val id = backStackEntry.arguments?.getInt("id")
+        // ACERCA DE (con barra)
+        composable("about") {
+            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
+                AboutScreen(navController)
+            }
+        }
+
+        // CONTACTO (con barra)
+        composable("contact") {
+            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
+                ContactScreen(navController)
+            }
+        }
+
+        // CARRITO (con barra)
+        composable("carrito") {
+            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
+                CarritoScreen(navController, carritoViewModel)
+            }
+        }
+
+        // BACKOFFICE (solo admin)
+        composable("backoffice") {
+            if (authViewModel.esAdmin()) BackOfficeScreen(navController)
+            else Text("Acceso Denegado")
+        }
+
+        // AGREGAR PRODUCTO (solo admin)
+        composable("agregarProducto") {
+            if (authViewModel.esAdmin()) AgregarProductoScreen(navController)
+            else Text("Acceso Denegado")
+        }
+
+        // DETALLE CANCHA (sin barra)
+        composable(
+            "detalle/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entry ->
+            val id = entry.arguments?.getInt("id")
 
             if (id != null) {
                 DetalleCanchaScreen(
@@ -67,39 +103,31 @@ fun NavGraph(
                     navController = navController
                 )
             } else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) { Text("ID inválido") }
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("ID inválido")
+                }
             }
         }
 
-        // CARRITO
-        composable("carrito") {
-            CarritoScreen(navController, carritoViewModel)
-        }
-
-        // FORMULARIO RESERVA
+        // FORM RESERVA (sin barra)
         composable("reservaForm") {
             ReservaFormScreen(navController, carritoViewModel)
         }
 
-        // COMPRA EXITOSA
-        composable("compraExitosa") {
-            CompraExitosaScreen(navController)
+        // COMPRA EXITOSA (sin barra)
+        composable(
+            "compraExitosa/{resumen}",
+            arguments = listOf(navArgument("resumen") { type = NavType.StringType })
+        ) { entry ->
+            CompraExitosaScreen(navController, entry.arguments?.getString("resumen") ?: "")
         }
 
-        // COMPRA RECHAZADA
+        // COMPRA RECHAZADA (sin barra)
         composable(
             "compraRechazada/{msg}",
-            arguments = listOf(navArgument("msg") {
-                defaultValue = "Hubo un error en la compra"
-            })
+            arguments = listOf(navArgument("msg") { defaultValue = "Hubo un error" })
         ) { entry ->
-            CompraRechazadaScreen(
-                navController,
-                mensajeError = entry.arguments?.getString("msg") ?: ""
-            )
+            CompraRechazadaScreen(navController, entry.arguments?.getString("msg") ?: "")
         }
     }
 }

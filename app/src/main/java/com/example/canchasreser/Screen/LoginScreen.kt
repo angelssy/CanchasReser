@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.canchasreser.R
 import com.example.canchasreser.viewmodel.AuthViewModel
+import com.example.canchasreser.Utils.isValidEmail
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +26,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -51,10 +53,12 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
             )
 
-            // EMAIL
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    mensajeError = null
+                },
                 label = { Text("Correo electrónico") },
                 colors = TextFieldDefaults.colors(
                     focusedLabelColor = Color(0xFF0A6E2F),
@@ -72,10 +76,12 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // CONTRASEÑA
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    mensajeError = null
+                },
                 label = { Text("Contraseña") },
                 colors = TextFieldDefaults.colors(
                     focusedLabelColor = Color(0xFF0A6E2F),
@@ -96,8 +102,35 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
             Button(
                 onClick = {
-                    val success = viewModel.login(email, password)
-                    if (success) navController.navigate("catalogo")
+
+                    // 👉 ACCESO ADMIN SIN REGISTRO
+                    if (email == "admin@admin.com" && password == "admin123") {
+                        viewModel.usuarioActual.value = "ADMIN"
+                        navController.navigate("backoffice")
+                        return@Button
+                    }
+
+                    // Validaciones usuario normal
+                    when {
+                        email.isBlank() || password.isBlank() -> {
+                            mensajeError = "Debes ingresar tu correo y contraseña"
+                        }
+                        !email.isValidEmail() -> {
+                            mensajeError = "Correo inválido"
+                        }
+                        else -> {
+                            val success = viewModel.login(email.trim(), password)
+
+                            if (success) {
+                                mensajeError = null
+                                navController.navigate("inicio") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            } else {
+                                mensajeError = "Credenciales inválidas"
+                            }
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,6 +139,15 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Iniciar Sesión", color = Color(0xFF0A6E2F), fontSize = 18.sp)
+            }
+
+            if (mensajeError != null) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = mensajeError ?: "",
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(15.dp))
