@@ -29,88 +29,80 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
                     }
                 }
             )
-        }
-    ) { padding ->
-
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-
-            // 🔹 CONTENIDO SCROLLEABLE
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = 90.dp), // evita tapar contenido
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-
-                Text("Jugadores seleccionados:", style = MaterialTheme.typography.titleLarge)
-
-                if (jugadores.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Aún no hay jugadores. Agrega con el botón.")
-                    }
-                } else {
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        jugadores.forEach { id ->
-                            Card(modifier = Modifier.fillMaxWidth()) {
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text("Jugador $id", style = MaterialTheme.typography.bodyLarge)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Button(
-                        onClick = { carritoViewModel.agregarJugador() },
-                        modifier = Modifier.weight(1f),
-                        enabled = jugadores.size < 22  // ← LIMITE MÁXIMO
-                    ) {
-                        Text("Agregar jugador")
-                    }
-
-                    Button(
-                        onClick = { carritoViewModel.eliminarJugador() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Eliminar jugador")
-                    }
-                }
-            }
-
-            // 🔹 BOTÓN FIJO ABAJO
+        },
+        bottomBar = {
+            // 🔹 BOTÓN FIJO EN LA BARRA INFERIOR DE SCAFFOLD
             Button(
                 onClick = { navController.navigate("reservaForm") },
                 enabled = jugadores.isNotEmpty(),
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(16.dp)
                     .height(55.dp)
             ) {
                 Text("Continuar")
             }
+        }
+    ) { padding ->
 
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            Text("Jugadores seleccionados:", style = MaterialTheme.typography.titleLarge)
+
+            if (jugadores.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Aún no hay jugadores. Agrega con el botón.")
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    jugadores.forEach { id ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Jugador $id")
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(
+                    onClick = { carritoViewModel.agregarJugador() },
+                    modifier = Modifier.weight(1f),
+                    enabled = jugadores.size < 22
+                ) {
+                    Text("Agregar jugador")
+                }
+
+                Button(
+                    onClick = { carritoViewModel.eliminarJugador() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Eliminar jugador")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(70.dp)) // evita que el contenido choque con la barra
         }
     }
 }

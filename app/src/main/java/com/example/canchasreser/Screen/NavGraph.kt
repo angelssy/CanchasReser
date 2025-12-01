@@ -69,11 +69,9 @@ fun NavGraph(
             }
         }
 
-        // CARRITO (con barra)
+        // CARRITO (SIN barra)
         composable("carrito") {
-            Scaffold(bottomBar = { BottomBar(navController, authViewModel) }) {
-                CarritoScreen(navController, carritoViewModel)
-            }
+            CarritoScreen(navController, carritoViewModel)
         }
 
         // BACKOFFICE (solo admin)
