@@ -61,6 +61,7 @@ class CarritoViewModel : ViewModel() {
      */
     fun agregarJugador() {
         val current = _jugadores.value.toMutableList()
+        if (current.size >= 22) return
         val nextId = (current.size + 1)
         current.add(nextId)
         _jugadores.value = current

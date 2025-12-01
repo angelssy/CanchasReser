@@ -3,7 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    id("org.jetbrains.kotlin.plugin.serialization")version "1.9.0"
+
+
+    // ⭐ Necesario para Firebase
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -111,9 +116,17 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 // Room
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    // Firestore ⭐
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Para analytics si lo quieres (opcional)
+    // implementation("com.google.firebase:firebase-analytics-ktx")
     implementation ("androidx.room:room-runtime:2.6.0")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.0")
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }

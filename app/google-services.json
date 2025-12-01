@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496046224296",
+    "project_id": "canchasreser-7ced9",
+    "storage_bucket": "canchasreser-7ced9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496046224296:android:a34814666b1f5ff180e39d",
+        "android_client_info": {
+          "package_name": "com.example.canchasreser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2trOyOZudJmA5tgkIyUrDSSFjipqDyZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

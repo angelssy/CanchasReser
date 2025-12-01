@@ -1,4 +1,5 @@
 package com.example.canchasreser.Screen
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -6,16 +7,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.canchasreser.model.ReservaData
+import com.example.canchasreser.model.Reserva
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Composable
 fun CompraExitosaScreen(navController: NavController, resumenJson: String) {
 
-    // Convertimos JSON → Objeto
+    // Convertimos JSON → Objeto Reserva
     val resumen = try {
-        Json.decodeFromString<ReservaData>(java.net.URLDecoder.decode(resumenJson, "UTF-8"))
+        Json.decodeFromString<Reserva>(java.net.URLDecoder.decode(resumenJson, "UTF-8"))
     } catch (e: Exception) {
         null
     }
@@ -45,11 +46,12 @@ fun CompraExitosaScreen(navController: NavController, resumenJson: String) {
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("📌 Responsable: ${resumen.nombreResponsable}")
-                            Text("👥 Jugadores: ${resumen.cantidadJugadores}")
+                            Text("📌 Responsable: ${resumen.responsable}")
+                            Text("👥 Jugadores: ${resumen.jugadores.joinToString()}")
                             Text("📅 Fecha: ${resumen.fecha}")
                             Text("⏰ Hora: ${resumen.hora}")
                             Text("🏟 Cancha: ${resumen.canchaNombre}")
+                            Text("💵 Total: $${resumen.total}")
                         }
                     }
                 }

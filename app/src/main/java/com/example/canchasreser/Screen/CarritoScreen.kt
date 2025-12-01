@@ -1,6 +1,8 @@
 package com.example.canchasreser.Screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,7 +17,6 @@ import com.example.canchasreser.viewmodel.CarritoViewModel
 @Composable
 fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewModel) {
 
-    // Consumimos la lista de jugadores desde el ViewModel
     val jugadores by carritoViewModel.jugadores.collectAsState()
 
     Scaffold(
@@ -31,72 +32,85 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
         }
     ) { padding ->
 
-        Column(
+        Box(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            Text("Jugadores seleccionados:", style = MaterialTheme.typography.titleLarge)
+            // 🔹 CONTENIDO SCROLLEABLE
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 90.dp), // evita tapar contenido
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
 
-            if (jugadores.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Aún no hay jugadores. Agrega con el botón.")
-                }
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    jugadores.forEach { id ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text("Jugador $id", style = MaterialTheme.typography.bodyLarge)
+                Text("Jugadores seleccionados:", style = MaterialTheme.typography.titleLarge)
+
+                if (jugadores.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Aún no hay jugadores. Agrega con el botón.")
+                    }
+                } else {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        jugadores.forEach { id ->
+                            Card(modifier = Modifier.fillMaxWidth()) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("Jugador $id", style = MaterialTheme.typography.bodyLarge)
+                                }
                             }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = { carritoViewModel.agregarJugador() },
+                        modifier = Modifier.weight(1f),
+                        enabled = jugadores.size < 22  // ← LIMITE MÁXIMO
+                    ) {
+                        Text("Agregar jugador")
+                    }
+
+                    Button(
+                        onClick = { carritoViewModel.eliminarJugador() },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Eliminar jugador")
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = { carritoViewModel.agregarJugador() },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Agregar jugador")
-                }
-
-                Button(
-                    onClick = { carritoViewModel.eliminarJugador() },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Eliminar jugador")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+            // 🔹 BOTÓN FIJO ABAJO
             Button(
                 onClick = { navController.navigate("reservaForm") },
                 enabled = jugadores.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(55.dp)
             ) {
-                Text("Continuar (Completar nombres)")
+                Text("Continuar")
             }
+
         }
     }
 }

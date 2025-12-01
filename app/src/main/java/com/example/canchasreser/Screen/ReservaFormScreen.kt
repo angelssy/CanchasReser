@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,19 +18,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.canchasreser.viewmodel.CarritoViewModel
-import com.example.canchasreser.model.ReservaData
+import com.example.canchasreser.viewmodel.ReservaViewModel
+import com.example.canchasreser.model.Reserva
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
+import java.net.URLEncoder
+import androidx.compose.foundation.text.KeyboardOptions
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoViewModel) {
+fun ReservaFormScreen(
+    navController: NavController,
+    carritoViewModel: CarritoViewModel,
+    reservaViewModel: ReservaViewModel = viewModel()
+) {
 
     var nombreResponsable by remember { mutableStateOf("") }
     var fecha by remember { mutableStateOf("") }
@@ -43,15 +50,14 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
+    // Jugadores desde el ViewModel
     val jugadores by carritoViewModel.jugadores.collectAsState()
-    val canchaReservada = carritoViewModel.items.lastOrNull()?.cancha
-
     val playerNames = remember { mutableStateListOf<String>() }
 
     LaunchedEffect(jugadores.size) {
-        val size = jugadores.size
-        while (playerNames.size < size) playerNames.add("")
-        while (playerNames.size > size) playerNames.removeLast()
+        val count = jugadores.size
+        while (playerNames.size < count) playerNames.add("")
+        while (playerNames.size > count) playerNames.removeLast()
     }
 
     val datePickerDialog = DatePickerDialog(
@@ -68,10 +74,16 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 title = { Text("Reserva de Cancha", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Atrás",
+                            tint = Color.White
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color(0xFF0A6E2F))
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color(0xFF0A6E2F)
+                )
             )
         }
     ) { padding ->
@@ -80,16 +92,18 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .background(Color(0xFFE8F5E9))
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(Color(0xFFE8F5E9)),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
 
+            // CLIMA
             item {
                 ClimaCard(apiKey = "c734635bd206fc577f2be5215aa64228")
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
+            // NOMBRE RESPONSABLE
             item {
                 OutlinedTextField(
                     value = nombreResponsable,
@@ -102,6 +116,7 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 if (nombreError) Text("Debes ingresar un nombre válido", color = Color.Red)
             }
 
+            // JUGADORES
             item {
                 Text("Nombres de los jugadores:", style = MaterialTheme.typography.titleMedium)
             }
@@ -110,17 +125,18 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 OutlinedTextField(
                     value = value,
                     onValueChange = { playerNames[index] = it },
-                    singleLine = true,
                     label = { Text("Jugador ${index + 1}") },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     shape = RoundedCornerShape(10.dp)
                 )
             }
 
             item {
-                if (jugadoresError) Text("Debes completar todos los nombres", color = Color.Red)
+                if (jugadoresError) Text("Debes ingresar todos los nombres.", color = Color.Red)
             }
 
+            // FECHA
             item {
                 OutlinedTextField(
                     value = fecha,
@@ -129,28 +145,27 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { datePickerDialog.show() },
-                    enabled = false,
                     readOnly = true,
+                    enabled = false,
                     isError = fechaError,
                     shape = RoundedCornerShape(10.dp)
                 )
             }
 
+            // HORA
             item {
-                HoraSelector(
-                    hora = hora,
-                    onHoraSelected = { hora = it }
-                )
+                HoraSelector(hora = hora, onHoraSelected = { hora = it })
                 if (horaError) Text("Debes seleccionar una hora", color = Color.Red)
             }
 
+            // TARJETA
             item {
                 OutlinedTextField(
                     value = cardNumber,
                     onValueChange = { cardNumber = it.filter { c -> c.isDigit() } },
                     label = { Text("Número de tarjeta") },
                     placeholder = { Text("Ej: 1234567890123") },
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                    keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
@@ -159,45 +174,45 @@ fun ReservaFormScreen(navController: NavController, carritoViewModel: CarritoVie
                 )
             }
 
+            // BOTÓN CONFIRMAR
             item {
                 Button(
                     onClick = {
+                        // Validaciones
                         nombreError = nombreResponsable.isBlank()
                         fechaError = fecha.isBlank()
                         horaError = hora.isBlank()
                         jugadoresError = playerNames.any { it.isBlank() }
 
-                        val tarjetaInvalida = cardNumber.length !in 1..13
-                        if (tarjetaInvalida) {
-                            navController.navigate("compraRechazada/${"Número de tarjeta inválido"}")
+                        if (nombreError || fechaError || horaError || jugadoresError) {
                             return@Button
                         }
 
-                        if (!(nombreError || fechaError || horaError || jugadoresError)) {
+                        // Construir objeto Reserva
+                        val reserva = Reserva(
+                            responsable = nombreResponsable,
+                            jugadores = playerNames.toList(),
+                            fecha = fecha,
+                            hora = hora,
+                            canchaId = carritoViewModel.items.firstOrNull()?.cancha?.id ?: 0,
+                            canchaNombre = carritoViewModel.items.firstOrNull()?.cancha?.nombre ?: "",
+                            total = carritoViewModel.total()
+                        )
 
-                            val resumen = ReservaData(
-                                nombreResponsable = nombreResponsable,
-                                cantidadJugadores = jugadores.size,
-                                fecha = fecha,
-                                hora = hora,
-                                canchaNombre = canchaReservada?.nombre ?: "Sin cancha"
-                            )
+                        // Guardar en Firebase (best effort, sin esperar)
+                        reservaViewModel.guardarReserva(reserva)
 
-                            val json = java.net.URLEncoder.encode(
-                                Json.encodeToString(resumen),
-                                "UTF-8"
-                            )
+                        // Pasar la reserva a la pantalla de éxito
+                        val json = URLEncoder.encode(Json.encodeToString(reserva), "UTF-8")
 
-                            carritoViewModel.vaciarJugadores()
-                            carritoViewModel.vaciarCarrito()
+                        carritoViewModel.vaciarJugadores()
 
-                            navController.navigate("compraExitosa/$json")
-                        }
+                        navController.navigate("compraExitosa/$json")
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0A6E2F)),
+                    colors = ButtonDefaults.buttonColors(Color(0xFF0A6E2F)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("Confirmar Reserva", color = Color.White)
