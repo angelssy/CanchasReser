@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.canchasreser.viewmodel.AuthViewModel
+import androidx.compose.material.icons.filled.ExitToApp
 
 @Composable
 fun BottomBar(navController: NavController, authViewModel: AuthViewModel) {
@@ -55,5 +56,21 @@ fun BottomBar(navController: NavController, authViewModel: AuthViewModel) {
                 label = { Text("Admin", color = Color.White) }
             )
         }
+        NavigationBarItem(
+            selected = false,
+            onClick = {
+                authViewModel.logout()
+                navController.navigate("login") {
+                    popUpTo("inicio") { inclusive = true }
+                }
+            },
+            icon = {
+                Icon(Icons.Default.ExitToApp, contentDescription = null, tint = Color.White)
+            },
+            label = {
+                Text("Salir", color = Color.White)
+            }
+        )
+
     }
 }

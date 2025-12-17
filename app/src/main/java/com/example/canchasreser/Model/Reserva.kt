@@ -7,7 +7,8 @@ data class Reserva(
     val responsable: String = "",
     val jugadores: List<String> = emptyList(),
     val fecha: String = "",
-    val hora: String = "",
+    val horaInicio: String = "",
+    val horaTermino: String = "",
     val canchaId: Int = 0,
     val canchaNombre: String = "",
     val total: Double = 0.0

@@ -19,7 +19,6 @@ import androidx.navigation.NavController
 import com.example.canchasreser.R
 import com.example.canchasreser.viewmodel.AuthViewModel
 import com.example.canchasreser.Utils.isValidEmail
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
@@ -29,137 +28,76 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     var mensajeError by remember { mutableStateOf<String?>(null) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF66BB6A)),
+        modifier = Modifier.fillMaxSize().background(Color(0xFF66BB6A)),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(0.85f)
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.85f)) {
 
-            Image(
-                painter = painterResource(id = R.drawable.fff),
+            Image(painter = painterResource(id = R.drawable.fff),
                 contentDescription = null,
-                modifier = Modifier.size(120.dp)
-            )
+                modifier = Modifier.size(120.dp))
 
-            Text(
-                text = "Canchas Reser",
-                fontSize = 32.sp,
+            Text("Canchas Reser", fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
-            )
+                color = Color.White)
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = {
-                    email = it
-                    mensajeError = null
-                },
-                label = { Text("Correo electrónico") },
-                colors = TextFieldDefaults.colors(
-                    focusedLabelColor = Color(0xFF0A6E2F),
-                    cursorColor = Color.Black,
-                    focusedIndicatorColor = Color(0xFF0A6E2F),
-                    unfocusedIndicatorColor = Color(0xFF388E3C),
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
-            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(value = email,
+                onValueChange = { email = it; mensajeError = null },
+                label = { Text("Correo") },
+                modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = {
-                    password = it
-                    mensajeError = null
-                },
+            OutlinedTextField(value = password,
+                onValueChange = { password = it; mensajeError = null },
                 label = { Text("Contraseña") },
-                colors = TextFieldDefaults.colors(
-                    focusedLabelColor = Color(0xFF0A6E2F),
-                    cursorColor = Color.Black,
-                    focusedIndicatorColor = Color(0xFF0A6E2F),
-                    unfocusedIndicatorColor = Color(0xFF388E3C),
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp)
-            )
+                modifier = Modifier.fillMaxWidth())
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
+                modifier = Modifier.fillMaxWidth().height(55.dp),
                 onClick = {
-
-                    // 👉 ACCESO ADMIN SIN REGISTRO
-                    if (email == "admin@admin.com" && password == "admin123") {
-                        viewModel.usuarioActual.value = "ADMIN"
-                        navController.navigate("backoffice")
-                        return@Button
-                    }
-
-                    // Validaciones usuario normal
                     when {
                         email.isBlank() || password.isBlank() -> {
-                            mensajeError = "Debes ingresar tu correo y contraseña"
-                        }
-                        !email.isValidEmail() -> {
-                            mensajeError = "Correo inválido"
+                            mensajeError = "Completa los campos"
                         }
                         else -> {
-                            val success = viewModel.login(email.trim(), password)
-
-                            if (success) {
-                                mensajeError = null
-                                navController.navigate("inicio") {
-                                    popUpTo("login") { inclusive = true }
+                            viewModel.login(email.trim(), password.trim()) { success ->
+                                if (success) {
+                                    if (viewModel.esAdmin()) {
+                                        navController.navigate("backoffice")
+                                    } else {
+                                        navController.navigate("inicio") {
+                                            popUpTo("login") { inclusive = true }
+                                        }
+                                    }
+                                } else {
+                                    mensajeError = viewModel.mensaje.value
                                 }
-                            } else {
-                                mensajeError = "Credenciales inválidas"
                             }
                         }
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp),
-                colors = ButtonDefaults.buttonColors(Color.White),
-                shape = RoundedCornerShape(12.dp)
+                }
             ) {
-                Text("Iniciar Sesión", color = Color(0xFF0A6E2F), fontSize = 18.sp)
+                Text("Iniciar Sesión")
             }
 
             if (mensajeError != null) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = mensajeError ?: "",
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
+                Text(mensajeError ?: "", color = Color.Red)
             }
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "¿No tienes cuenta? Regístrate",
+            Text("¿No tienes cuenta? Regístrate",
                 color = Color.White,
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .clickable { navController.navigate("register") }
-            )
+                modifier = Modifier.clickable {
+                    navController.navigate("register")
+                })
         }
     }
 }

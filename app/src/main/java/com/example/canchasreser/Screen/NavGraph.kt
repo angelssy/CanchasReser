@@ -73,7 +73,9 @@ fun NavGraph(
         composable("carrito") {
             CarritoScreen(navController, carritoViewModel)
         }
-
+        composable("plantillaCancha") {
+            PlantillaCanchaScreen(navController)
+        }
         // BACKOFFICE (solo admin)
         composable("backoffice") {
             if (authViewModel.esAdmin()) BackOfficeScreen(navController)
@@ -85,7 +87,9 @@ fun NavGraph(
             if (authViewModel.esAdmin()) AgregarProductoScreen(navController)
             else Text("Acceso Denegado")
         }
-
+        composable("plantillaCancha") {
+            PlantillaCanchaScreen(navController)
+        }
         // DETALLE CANCHA (sin barra)
         composable(
             "detalle/{id}",

@@ -21,8 +21,10 @@ fun BackOfficeScreen(navController: NavController) {
     var reservas by remember { mutableStateOf(listOf<Reserva>()) }
 
     LaunchedEffect(Unit) {
-        db.collection("reservas").addSnapshotListener { snapshot, _ ->
-            if (snapshot != null) {
+        db.collection("reservas").addSnapshotListener { snapshot, error ->
+            if (error != null) return@addSnapshotListener
+
+            if (snapshot != null && !snapshot.isEmpty) {
                 reservas = snapshot.toObjects(Reserva::class.java)
             }
         }
@@ -57,7 +59,6 @@ fun BackOfficeScreen(navController: NavController) {
                             Text("Responsable: ${r.responsable}")
                             Text("Jugadores: ${r.jugadores.joinToString()}")
                             Text("Fecha: ${r.fecha}")
-                            Text("Hora: ${r.hora}")
                             Text("Cancha: ${r.canchaNombre}")
                             Text("Total: $${r.total}")
                         }

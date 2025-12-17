@@ -1,5 +1,6 @@
 package com.example.canchasreser.Screen
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import com.example.canchasreser.viewmodel.CanchasViewModel
 import com.example.canchasreser.viewmodel.CarritoViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +25,7 @@ fun DetalleCanchaScreen(
     canchaId: Int,
     viewModel: CanchasViewModel = viewModel(),
     carritoViewModel: CarritoViewModel = viewModel(),
-    navController: androidx.navigation.NavController
+    navController: NavController
 ) {
 
     val cancha = viewModel.canchas.value.find { it.id == canchaId }
@@ -40,11 +42,11 @@ fun DetalleCanchaScreen(
             )
         },
 
-        bottomBar = {     // ⭐ Botón siempre visible
+        bottomBar = {
             cancha?.let {
                 Button(
                     onClick = {
-                        carritoViewModel.agregarAlCarrito(it)
+                        // ✅ AHORA SOLO NAVEGAMOS A LA FORMACIÓN
                         navController.navigate("carrito")
                     },
                     modifier = Modifier

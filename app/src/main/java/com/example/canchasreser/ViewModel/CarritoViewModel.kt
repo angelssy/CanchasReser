@@ -1,87 +1,42 @@
 package com.example.canchasreser.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.canchasreser.model.Carrito
-import com.example.canchasreser.model.Cancha
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.example.canchasreser.model.JugadorPos
+import com.example.canchasreser.model.Cancha
 
-/**
- * CarritoViewModel:
- * - mantiene compatibilidad con el carrito de canchas (items)
- * - añade manejo de "jugadores" como lista de IDs (1,2,3...) expuesta como StateFlow
- *
- * Los nombres de jugadores NO se guardan aquí (según tu solicitud).
- */
 class CarritoViewModel : ViewModel() {
 
-    // Si quieres mantener el carrito de canchas para compatibilidad:
-    val items = mutableStateListOf<Carrito>()
+    private val _jugadores = MutableStateFlow(
+        listOf(
+            JugadorPos(1, x = 50f, y = 90f),  // Arquero
+            JugadorPos(2, x = 20f, y = 70f),
+            JugadorPos(3, x = 40f, y = 70f),
+            JugadorPos(4, x = 60f, y = 70f),
+            JugadorPos(5, x = 80f, y = 70f),
 
-    fun agregarAlCarrito(cancha: Cancha) {
-        val existente = items.find { it.cancha.id == cancha.id }
-        if (existente != null) {
-            existente.cantidad += 1
-        } else {
-            items.add(Carrito(cancha))
+            JugadorPos(6, x = 30f, y = 45f),
+            JugadorPos(7, x = 50f, y = 45f),
+            JugadorPos(8, x = 70f, y = 45f),
+
+            JugadorPos(9, x = 35f, y = 20f),
+            JugadorPos(10, x = 50f, y = 20f),
+            JugadorPos(11, x = 65f, y = 20f),
+        )
+    )
+
+    val jugadores = _jugadores.asStateFlow()
+
+    fun actualizarJugador(index: Int, nombre: String, rut: String) {
+        val lista = _jugadores.value.toMutableList()
+        lista[index] = lista[index].copy(nombre = nombre, rut = rut)
+        _jugadores.value = lista
+    }
+    // ✅ ESTA FUNCIÓN ES LA QUE TE FALTABA
+    fun hayJugadoresCompletos(): Boolean {
+        return _jugadores.value.any {
+            it.nombre.isNotBlank() && it.rut.isNotBlank()
         }
-    }
-
-    fun eliminarDelCarrito(item: Carrito) {
-        items.remove(item)
-    }
-
-    fun actualizarCantidad(item: Carrito, cantidad: Int) {
-        if (cantidad <= 0) {
-            eliminarDelCarrito(item)
-        } else {
-            val index = items.indexOf(item)
-            if (index != -1) items[index].cantidad = cantidad
-        }
-    }
-
-    fun total(): Double {
-        return items.sumOf { it.cancha.precioHora * it.cantidad }
-    }
-
-    fun vaciarCarrito() {
-        items.clear()
-    }
-
-    // ----------------------------
-    // Nuevo: manejo de JUGADORES
-    // ----------------------------
-    private val _jugadores = MutableStateFlow<List<Int>>(emptyList())
-    val jugadores: StateFlow<List<Int>> = _jugadores.asStateFlow()
-
-    /**
-     * Agrega un jugador nuevo (su id será el siguiente número: 1,2,3...)
-     */
-    fun agregarJugador() {
-        val current = _jugadores.value.toMutableList()
-        if (current.size >= 22) return
-        val nextId = (current.size + 1)
-        current.add(nextId)
-        _jugadores.value = current
-    }
-
-    /**
-     * Elimina el último jugador (si hay)
-     */
-    fun eliminarJugador() {
-        val current = _jugadores.value.toMutableList()
-        if (current.isNotEmpty()) {
-            current.removeLast()
-            _jugadores.value = current
-        }
-    }
-
-    /**
-     * Vacía la lista de jugadores (por ejemplo después de confirmar reserva)
-     */
-    fun vaciarJugadores() {
-        _jugadores.value = emptyList()
-    }
+}
 }

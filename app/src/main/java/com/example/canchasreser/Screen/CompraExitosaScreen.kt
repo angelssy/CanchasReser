@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import com.example.canchasreser.model.Reserva
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-
+import com.example.canchasreser.Utils.formatPrecio
 @Composable
 fun CompraExitosaScreen(navController: NavController, resumenJson: String) {
 
@@ -49,9 +49,10 @@ fun CompraExitosaScreen(navController: NavController, resumenJson: String) {
                             Text("📌 Responsable: ${resumen.responsable}")
                             Text("👥 Jugadores: ${resumen.jugadores.joinToString()}")
                             Text("📅 Fecha: ${resumen.fecha}")
-                            Text("⏰ Hora: ${resumen.hora}")
+                            Text("🟢 Hora inicio: ${resumen.horaInicio}")
+                            Text("🔴 Hora término: ${resumen.horaTermino}")
                             Text("🏟 Cancha: ${resumen.canchaNombre}")
-                            Text("💵 Total: $${resumen.total}")
+                            Text("💰 Total: ${formatPrecio(resumen.total)}")
                         }
                     }
                 }

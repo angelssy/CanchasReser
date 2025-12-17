@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.canchasreser.viewmodel.CanchasViewModel
 import com.example.canchasreser.model.Cancha
-
+import com.example.canchasreser.Utils.formatPrecio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogoScreen(navController: NavController, viewModel: CanchasViewModel ) {
@@ -95,7 +95,8 @@ fun CanchaCard(cancha: Cancha, onClick: () -> Unit) {
 
             Column {
                 Text(cancha.nombre, style = MaterialTheme.typography.titleLarge)
-                Text("Precio: ${cancha.precioHora}")
+
+                Text("Precio: ${formatPrecio(cancha.precioHora)}")
                 cancha.descripcion?.let { Text(it, maxLines = 2) }
             }
         }
