@@ -1,6 +1,5 @@
 package com.example.canchasreser.Screen
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,12 +21,13 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleCanchaScreen(
-    canchaId: Int,
+    canchaId: String,
     viewModel: CanchasViewModel = viewModel(),
     carritoViewModel: CarritoViewModel = viewModel(),
     navController: NavController
 ) {
 
+    // ✅ COMPARACIÓN STRING vs STRING
     val cancha = viewModel.canchas.value.find { it.id == canchaId }
 
     Scaffold(
@@ -41,12 +41,10 @@ fun DetalleCanchaScreen(
                 }
             )
         },
-
         bottomBar = {
             cancha?.let {
                 Button(
                     onClick = {
-                        // ✅ AHORA SOLO NAVEGAMOS A LA FORMACIÓN
                         navController.navigate("carrito")
                     },
                     modifier = Modifier
@@ -61,7 +59,6 @@ fun DetalleCanchaScreen(
     ) { padding ->
 
         cancha?.let { c ->
-
             LazyColumn(
                 modifier = Modifier
                     .padding(padding)
@@ -81,8 +78,16 @@ fun DetalleCanchaScreen(
                     )
                 }
 
-                item { Text(c.nombre, style = MaterialTheme.typography.titleLarge) }
-                item { Text("Precio por hora: ${formatPrecio(c.precioHora)}", style = MaterialTheme.typography.titleMedium) }
+                item {
+                    Text(c.nombre, style = MaterialTheme.typography.titleLarge)
+                }
+
+                item {
+                    Text(
+                        "Precio por hora: ${formatPrecio(c.precioHora)}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
                 item { c.descripcion?.let { Text(it) } }
                 item { Text("Superficie: ${c.tipoSuperficie}") }

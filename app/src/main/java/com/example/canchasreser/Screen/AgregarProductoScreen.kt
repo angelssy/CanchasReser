@@ -1,16 +1,17 @@
 package com.example.canchasreser.Screen
 
-
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,20 +26,24 @@ fun AgregarProductoScreen(navController: NavController) {
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-
     var imagenUri by remember { mutableStateOf<Uri?>(null) }
 
-    // ✅ Lanzador de galería
+    // 👉 estado para el mensaje
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imagenUri = uri
-    }
+    ) { uri -> imagenUri = uri }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Agregar Nueva Cancha") }
+                title = { Text("Agregar Nueva Cancha") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Regresar")
+                    }
+                }
             )
         }
     ) { padding ->
@@ -73,7 +78,6 @@ fun AgregarProductoScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // ✅ BOTÓN PARA SUBIR IMAGEN
             Button(
                 onClick = { galleryLauncher.launch("image/*") },
                 modifier = Modifier.fillMaxWidth()
@@ -81,7 +85,6 @@ fun AgregarProductoScreen(navController: NavController) {
                 Text("Seleccionar imagen desde galería")
             }
 
-            // ✅ PREVISUALIZACIÓN DE IMAGEN
             imagenUri?.let {
                 Image(
                     painter = rememberAsyncImagePainter(it),
@@ -94,32 +97,57 @@ fun AgregarProductoScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // 💾 GUARDAR
             Button(
                 onClick = {
-
-                    if (nombre.isBlank() || precio.isBlank() || descripcion.isBlank() || imagenUri == null) {
-                        return@Button
-                    }
+                    if (nombre.isBlank() || precio.isBlank() ||
+                        descripcion.isBlank() || imagenUri == null
+                    ) return@Button
 
                     val nuevaCancha = hashMapOf(
-                        "id" to UUID.randomUUID().toString(),
                         "nombre" to nombre,
                         "precioHora" to precio.toInt(),
                         "descripcion" to descripcion,
-                        "imagen" to imagenUri.toString()
+                        "imagen" to imagenUri.toString(),
+                        "fechaCreacion" to Date()
                     )
 
                     db.collection("canchas")
                         .add(nuevaCancha)
                         .addOnSuccessListener {
-                            navController.popBackStack()
+                            mostrarDialogo = true // 👈 MOSTRAR MENSAJE
                         }
-
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Guardar Cancha")
             }
+
+            OutlinedButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Regresar")
+            }
         }
+    }
+
+    // ✅ DIÁLOGO DE CONFIRMACIÓN
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Éxito") },
+            text = { Text("Cancha agregada correctamente") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        mostrarDialogo = false
+                        navController.popBackStack() // vuelve al BackOffice
+                    }
+                ) {
+                    Text("Aceptar")
+                }
+            }
+        )
     }
 }

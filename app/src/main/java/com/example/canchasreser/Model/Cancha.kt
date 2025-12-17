@@ -1,7 +1,7 @@
 package com.example.canchasreser.model
 
 data class Cancha(
-    val id: Int,
+    val id: String,
     val nombre: String,
     val tipoSuperficie: String,
     val dimensiones: String,

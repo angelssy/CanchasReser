@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
-
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,8 +24,9 @@ import com.example.canchasreser.model.Reserva
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
-import java.util.*
+import java.util.Calendar
 import androidx.compose.foundation.text.KeyboardOptions
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReservaFormScreen(
@@ -46,12 +46,18 @@ fun ReservaFormScreen(
     var horaInicioError by remember { mutableStateOf(false) }
     var horaTerminoError by remember { mutableStateOf(false) }
 
+    // ✅ ERROR DE RANGO DE HORAS
+    var horaRangoError by remember { mutableStateOf<String?>(null) }
+
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
+    // ✅ DatePicker funcional
     val datePickerDialog = DatePickerDialog(
         context,
-        { _, year, month, day -> fecha = "$day/${month + 1}/$year" },
+        { _, year, month, day ->
+            fecha = "$day/${month + 1}/$year"
+        },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
@@ -63,7 +69,11 @@ fun ReservaFormScreen(
                 title = { Text("Reserva de Cancha", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás", tint = Color.White)
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Atrás",
+                            tint = Color.White
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -81,11 +91,13 @@ fun ReservaFormScreen(
                 .background(Color(0xFFE8F5E9)),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+
             // ✅ CLIMA
             item {
                 ClimaCard(apiKey = "c734635bd206fc577f2be5215aa64228")
                 Spacer(modifier = Modifier.height(12.dp))
             }
+
             // ✅ RESPONSABLE
             item {
                 OutlinedTextField(
@@ -98,33 +110,59 @@ fun ReservaFormScreen(
                 )
             }
 
-            // ✅ FECHA
+            // ✅ FECHA (CALENDARIO FUNCIONAL)
             item {
-                OutlinedTextField(
-                    value = fecha,
-                    onValueChange = {},
-                    label = { Text("Fecha de reserva") },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { datePickerDialog.show() },
-                    readOnly = true,
-                    isError = fechaError,
-                    shape = RoundedCornerShape(10.dp)
-                )
+                        .clickable { datePickerDialog.show() }
+                ) {
+                    OutlinedTextField(
+                        value = fecha,
+                        onValueChange = {},
+                        label = { Text("Fecha de reserva") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        enabled = false,
+                        isError = fechaError,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                }
             }
 
             // ✅ HORA INICIO
             item {
                 Text("Hora Inicio")
-                HoraSelector(hora = horaInicio) { horaInicio = it }
-                if (horaInicioError) Text("Selecciona hora de inicio", color = Color.Red)
+                HoraSelector(hora = horaInicio) {
+                    horaInicio = it
+                    horaRangoError = null
+                }
+                if (horaInicioError) {
+                    Text("Selecciona hora de inicio", color = Color.Red)
+                }
             }
 
             // ✅ HORA TÉRMINO
             item {
                 Text("Hora Término")
-                HoraSelector(hora = horaTermino) { horaTermino = it }
-                if (horaTerminoError) Text("Selecciona hora de término", color = Color.Red)
+                HoraSelector(hora = horaTermino) {
+                    horaTermino = it
+                    horaRangoError = null
+                }
+                if (horaTerminoError) {
+                    Text("Selecciona hora de término", color = Color.Red)
+                }
+            }
+
+            // ❌ ERROR DE RANGO
+            item {
+                horaRangoError?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
 
             // ✅ TARJETA
@@ -142,17 +180,30 @@ fun ReservaFormScreen(
                 )
             }
 
-
             // ✅ BOTÓN FINAL
             item {
                 Button(
                     onClick = {
+
                         nombreError = nombreResponsable.isBlank()
                         fechaError = fecha.isBlank()
                         horaInicioError = horaInicio.isBlank()
                         horaTerminoError = horaTermino.isBlank()
+                        horaRangoError = null
 
-                        if (nombreError || fechaError || horaInicioError || horaTerminoError) return@Button
+                        if (nombreError || fechaError || horaInicioError || horaTerminoError) {
+                            return@Button
+                        }
+
+                        val inicio = horaToInt(horaInicio)
+                        val termino = horaToInt(horaTermino)
+
+                        // ❌ VALIDACIÓN DE HORAS
+                        if (termino <= inicio) {
+                            horaRangoError =
+                                "La hora de término debe ser mayor a la de inicio"
+                            return@Button
+                        }
 
                         val reserva = Reserva(
                             responsable = nombreResponsable,
@@ -167,7 +218,9 @@ fun ReservaFormScreen(
 
                         reservaViewModel.guardarReserva(reserva)
 
-                        val json = URLEncoder.encode(Json.encodeToString(reserva), "UTF-8")
+                        val json =
+                            URLEncoder.encode(Json.encodeToString(reserva), "UTF-8")
+
                         navController.navigate("compraExitosa/$json")
                     },
                     modifier = Modifier
@@ -180,4 +233,9 @@ fun ReservaFormScreen(
             }
         }
     }
+}
+
+// ✅ FUNCIÓN AUXILIAR
+fun horaToInt(hora: String): Int {
+    return hora.substringBefore(":").toIntOrNull() ?: -1
 }
