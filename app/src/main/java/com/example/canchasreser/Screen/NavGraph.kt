@@ -74,6 +74,7 @@ fun NavGraph(
             CarritoScreen(navController, carritoViewModel)
         }
 
+
         // BACKOFFICE (solo admin)
         composable("backoffice") {
             if (authViewModel.esAdmin()) {
@@ -92,7 +93,7 @@ fun NavGraph(
             }
         }
 
-        // DETALLE CANCHA ✅ ID STRING
+        // DETALLE CANCHA (ID STRING)
         composable(
             route = "detalle/{id}",
             arguments = listOf(navArgument("id") { type = NavType.StringType })
@@ -117,7 +118,7 @@ fun NavGraph(
             }
         }
 
-        // FORMULARIO RESERVA
+        // FORMULARIO DE RESERVA
         composable("reservaForm") {
             ReservaFormScreen(navController, carritoViewModel)
         }
@@ -136,7 +137,9 @@ fun NavGraph(
         // COMPRA RECHAZADA
         composable(
             route = "compraRechazada/{msg}",
-            arguments = listOf(navArgument("msg") { defaultValue = "Hubo un error" })
+            arguments = listOf(navArgument("msg") {
+                defaultValue = "Hubo un error"
+            })
         ) { entry ->
             CompraRechazadaScreen(
                 navController,
@@ -145,3 +148,4 @@ fun NavGraph(
         }
     }
 }
+

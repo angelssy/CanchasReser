@@ -46,13 +46,12 @@ fun ReservaFormScreen(
     var horaInicioError by remember { mutableStateOf(false) }
     var horaTerminoError by remember { mutableStateOf(false) }
 
-    // ✅ ERROR DE RANGO DE HORAS
     var horaRangoError by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
+    val jugadores by carritoViewModel.jugadores.collectAsState(initial = emptyList())
 
-    // ✅ DatePicker funcional
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, day ->
@@ -92,13 +91,11 @@ fun ReservaFormScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
 
-            // ✅ CLIMA
             item {
                 ClimaCard(apiKey = "c734635bd206fc577f2be5215aa64228")
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // ✅ RESPONSABLE
             item {
                 OutlinedTextField(
                     value = nombreResponsable,
@@ -110,27 +107,21 @@ fun ReservaFormScreen(
                 )
             }
 
-            // ✅ FECHA (CALENDARIO FUNCIONAL)
+            // 📅 FECHA (CALENDARIO FUNCIONAL)
             item {
-                Box(
+                OutlinedTextField(
+                    value = fecha,
+                    onValueChange = {},
+                    label = { Text("Fecha de reserva") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { datePickerDialog.show() }
-                ) {
-                    OutlinedTextField(
-                        value = fecha,
-                        onValueChange = {},
-                        label = { Text("Fecha de reserva") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                        enabled = false,
-                        isError = fechaError,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                }
+                        .clickable { datePickerDialog.show() },
+                    readOnly = true,
+                    isError = fechaError,
+                    shape = RoundedCornerShape(10.dp)
+                )
             }
 
-            // ✅ HORA INICIO
             item {
                 Text("Hora Inicio")
                 HoraSelector(hora = horaInicio) {
@@ -142,7 +133,6 @@ fun ReservaFormScreen(
                 }
             }
 
-            // ✅ HORA TÉRMINO
             item {
                 Text("Hora Término")
                 HoraSelector(hora = horaTermino) {
@@ -154,7 +144,6 @@ fun ReservaFormScreen(
                 }
             }
 
-            // ❌ ERROR DE RANGO
             item {
                 horaRangoError?.let {
                     Text(
@@ -165,7 +154,6 @@ fun ReservaFormScreen(
                 }
             }
 
-            // ✅ TARJETA
             item {
                 OutlinedTextField(
                     value = cardNumber,
@@ -180,7 +168,6 @@ fun ReservaFormScreen(
                 )
             }
 
-            // ✅ BOTÓN FINAL
             item {
                 Button(
                     onClick = {
@@ -191,14 +178,11 @@ fun ReservaFormScreen(
                         horaTerminoError = horaTermino.isBlank()
                         horaRangoError = null
 
-                        if (nombreError || fechaError || horaInicioError || horaTerminoError) {
-                            return@Button
-                        }
+                        if (nombreError || fechaError || horaInicioError || horaTerminoError) return@Button
 
                         val inicio = horaToInt(horaInicio)
                         val termino = horaToInt(horaTermino)
 
-                        // ❌ VALIDACIÓN DE HORAS
                         if (termino <= inicio) {
                             horaRangoError =
                                 "La hora de término debe ser mayor a la de inicio"
@@ -207,7 +191,7 @@ fun ReservaFormScreen(
 
                         val reserva = Reserva(
                             responsable = nombreResponsable,
-                            jugadores = carritoViewModel.jugadores.value.map { it.nombre },
+                            jugadores = jugadores.map { it.nombre }, // ✅
                             fecha = fecha,
                             horaInicio = horaInicio,
                             horaTermino = horaTermino,
@@ -226,7 +210,9 @@ fun ReservaFormScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF0A6E2F))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0A6E2F)
+                    )
                 ) {
                     Text("Confirmar Reserva", color = Color.White)
                 }

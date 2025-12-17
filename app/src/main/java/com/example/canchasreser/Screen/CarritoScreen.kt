@@ -18,19 +18,27 @@ import androidx.navigation.NavController
 import com.example.canchasreser.R
 import com.example.canchasreser.viewmodel.CarritoViewModel
 import androidx.compose.ui.graphics.Color
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewModel) {
 
-    val jugadores by carritoViewModel.jugadores.collectAsState()
+    val jugadores by carritoViewModel.jugadores.collectAsState(initial = emptyList())
+    val equipoActual by carritoViewModel.equipoActual.collectAsState()
+
     var jugadorSeleccionado by remember { mutableStateOf<Int?>(null) }
     var zoom by remember { mutableStateOf(1f) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Formación del Equipo") },
+                title = {
+                    Text(
+                        text = if (equipoActual == "A")
+                            "Formación Equipo A"
+                        else
+                            "Formación Equipo B"
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -49,7 +57,7 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ✅ CANCHA CON JUGADORES DENTRO
+            // ✅ CANCHA CON JUGADORES
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -58,20 +66,31 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
                     .clickable { zoom = if (zoom == 1f) 1.4f else 1f }
             ) {
 
+                // 🔥 IMAGEN CAMBIA SEGÚN EQUIPO
                 Image(
-                    painter = painterResource(id = R.drawable.canchita),
+                    painter = painterResource(
+                        id = if (equipoActual == "A")
+                            R.drawable.canchita
+                        else
+                            R.drawable.equipob
+                    ),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize()
                 )
 
-                // ✅ POSICIONES REALES SOBRE LA CANCHA
+                // ✅ POSICIONES DE LOS JUGADORES
                 val posiciones = listOf(
-                    Pair(0.43f, 0.34f), // Arquero
-                    Pair(0.32f, 0.53f), // Arquero
-                    Pair(0.57f, 0.53f), Pair(0.7f, 0.32f), Pair(0.25f, 0.84f),
-                    Pair(0.82f, 0.53f), Pair(0.45f, 0.85f), Pair(0.9f, 0.84f),
-                    Pair(0.56f, 0.71f), Pair(0.67f, 0.85f), Pair(0.55f, 0.99f),
-                    Pair(0.7f, 0.67f)
+                    Pair(0.43f, 0.34f),
+                    Pair(0.32f, 0.53f),
+                    Pair(0.57f, 0.53f),
+                    Pair(0.7f, 0.32f),
+                    Pair(0.25f, 0.84f),
+                    Pair(0.82f, 0.53f),
+                    Pair(0.45f, 0.85f),
+                    Pair(0.9f, 0.84f),
+                    Pair(0.56f, 0.71f),
+                    Pair(0.67f, 0.85f),
+                    Pair(0.55f, 0.99f)
                 )
 
                 jugadores.take(11).forEachIndexed { index, jugador ->
@@ -94,7 +113,10 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = if (jugador.nombre.isBlank()) "Jugador ${index + 1}" else jugador.nombre,
+                                    text = if (jugador.nombre.isBlank())
+                                        "Jugador ${index + 1}"
+                                    else
+                                        jugador.nombre,
                                     style = MaterialTheme.typography.bodySmall
                                 )
                                 if (jugador.rut.isNotBlank()) {
@@ -108,20 +130,31 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // ✅ BOTÓN CONTINUAR DIRECTO A RESERVA
+            // ✅ BOTÓN A / B
             Button(
-                onClick = { navController.navigate("reservaForm") },
-                enabled = carritoViewModel.hayJugadoresCompletos(),
+                onClick = {
+                    if (equipoActual == "A") {
+                        carritoViewModel.cambiarEquipo()
+                    } else {
+                        navController.navigate("reservaForm")
+                    }
+                },
+                enabled = carritoViewModel.hayJugadoresCompletosEquipoActual(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .height(55.dp)
             ) {
-                Text("Continuar a la Reserva")
+                Text(
+                    if (equipoActual == "A")
+                        "Ir a Equipo B"
+                    else
+                        "Continuar a la Reserva"
+                )
             }
         }
 
-        // ✅ DIÁLOGO PARA EDITAR JUGADOR
+        // ✅ DIÁLOGO EDITAR JUGADOR
         if (jugadorSeleccionado != null) {
             var nombre by remember { mutableStateOf(jugadores[jugadorSeleccionado!!].nombre) }
             var rut by remember { mutableStateOf(jugadores[jugadorSeleccionado!!].rut) }
@@ -160,4 +193,3 @@ fun CarritoScreen(navController: NavController, carritoViewModel: CarritoViewMod
         }
     }
 }
-
