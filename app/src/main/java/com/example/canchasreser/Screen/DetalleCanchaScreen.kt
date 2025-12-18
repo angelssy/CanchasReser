@@ -17,7 +17,6 @@ import com.example.canchasreser.viewmodel.CarritoViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.navigation.NavController
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleCanchaScreen(
@@ -27,7 +26,6 @@ fun DetalleCanchaScreen(
     navController: NavController
 ) {
 
-    // ✅ COMPARACIÓN STRING vs STRING
     val cancha = viewModel.canchas.value.find { it.id == canchaId }
 
     Scaffold(
@@ -42,10 +40,15 @@ fun DetalleCanchaScreen(
             )
         },
         bottomBar = {
-            cancha?.let {
+            cancha?.let { c ->
                 Button(
                     onClick = {
-                        navController.navigate("carrito")
+                        val tipo = detectarTipoCancha(
+                            nombre = c.nombre,
+                            imagen = c.imagen
+                        )
+
+                        navController.navigate("carrito/$tipo")
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -56,6 +59,7 @@ fun DetalleCanchaScreen(
                 }
             }
         }
+
     ) { padding ->
 
         cancha?.let { c ->
@@ -78,10 +82,7 @@ fun DetalleCanchaScreen(
                     )
                 }
 
-                item {
-                    Text(c.nombre, style = MaterialTheme.typography.titleLarge)
-                }
-
+                item { Text(c.nombre, style = MaterialTheme.typography.titleLarge) }
                 item {
                     Text(
                         "Precio por hora: ${formatPrecio(c.precioHora)}",
@@ -98,14 +99,21 @@ fun DetalleCanchaScreen(
 
                 item { Spacer(modifier = Modifier.height(100.dp)) }
             }
-
         } ?: Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text("Cancha no encontrada")
         }
+    }
+}
+fun detectarTipoCancha(nombre: String, imagen: String): String {
+    val texto = (nombre + imagen).lowercase()
+
+    return when {
+        "voley" in texto || "vóley" in texto -> "voley"
+        "basquet" in texto || "básquet" in texto -> "basquet"
+        "tenis" in texto -> "tenis"
+        else -> "futbol"
     }
 }

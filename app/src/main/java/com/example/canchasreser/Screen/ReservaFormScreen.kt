@@ -26,6 +26,7 @@ import kotlinx.serialization.json.Json
 import java.net.URLEncoder
 import java.util.Calendar
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextFieldDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,18 +110,28 @@ fun ReservaFormScreen(
 
             // 📅 FECHA (CALENDARIO FUNCIONAL)
             item {
-                OutlinedTextField(
-                    value = fecha,
-                    onValueChange = {},
-                    label = { Text("Fecha de reserva") },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { datePickerDialog.show() },
-                    readOnly = true,
-                    isError = fechaError,
-                    shape = RoundedCornerShape(10.dp)
-                )
+                        .clickable { datePickerDialog.show() }
+                ) {
+                    OutlinedTextField(
+                        value = fecha,
+                        onValueChange = {},
+                        label = { Text("Fecha de reserva") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        isError = fechaError,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF0A6E2F),
+                            unfocusedBorderColor = Color.DarkGray,
+                            disabledBorderColor = Color.Gray
+                        )
+                    )
+                }
             }
+
 
             item {
                 Text("Hora Inicio")

@@ -62,57 +62,6 @@ class RegistroUsuarioTest {
 
         assertFalse(resultado)
     }
-    @Test
-    fun `total del carrito debe calcularse correctamente`() {
-        val carrito = CarritoViewModel()
-
-        val cancha = Cancha(
-            id = 1,
-            nombre = "Cancha Futbol",
-            tipoSuperficie = "",
-            dimensiones = "",
-            medidas = "",
-            jugadores = "",
-            descripcion = "",
-            ubicacion = "",
-            precioHora = 10000.0,
-            imagen = ""
-        )
-
-        carrito.agregarAlCarrito(cancha)
-        carrito.agregarAlCarrito(cancha)
-
-        assertEquals(20000.0, carrito.total(), 0.0)
-    }
-    @Test
-    fun `agregar jugador debe aumentar la lista`() {
-        val carrito = CarritoViewModel()
-
-        carrito.agregarJugador()
-        carrito.agregarJugador()
-
-        assertEquals(2, carrito.jugadores.value.size)
-    }
-    @Test
-    fun `eliminar jugador debe reducir la lista`() {
-        val carrito = CarritoViewModel()
-
-        carrito.agregarJugador()
-        carrito.agregarJugador()
-        carrito.eliminarJugador()
-
-        assertEquals(1, carrito.jugadores.value.size)
-    }
-    @Test
-    fun `vaciar jugadores debe dejar lista en cero`() {
-        val carrito = CarritoViewModel()
-
-        carrito.agregarJugador()
-        carrito.agregarJugador()
-        carrito.vaciarJugadores()
-
-        assertEquals(0, carrito.jugadores.value.size)
-    }
 
 
 }

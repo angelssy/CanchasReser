@@ -7,6 +7,32 @@ fun String.isValidEmail(): Boolean {
     return this.isNotBlank() && emailRegex.matches(this)
 }
 
+fun validarRut(rut: String): Boolean {
+    val cleanRut = rut.replace(".", "").replace("-", "").uppercase()
+
+    if (cleanRut.length < 2) return false
+
+    val cuerpo = cleanRut.dropLast(1)
+    val dv = cleanRut.last()
+
+    var suma = 0
+    var multiplo = 2
+
+    for (i in cuerpo.reversed()) {
+        suma += Character.getNumericValue(i) * multiplo
+        multiplo = if (multiplo < 7) multiplo + 1 else 2
+    }
+
+    val resto = 11 - (suma % 11)
+
+    val dvEsperado = when (resto) {
+        11 -> '0'
+        10 -> 'K'
+        else -> resto.toString()[0]
+    }
+
+    return dv == dvEsperado
+}
 
 fun String.isValidRut(): Boolean {
     val rutClean = this

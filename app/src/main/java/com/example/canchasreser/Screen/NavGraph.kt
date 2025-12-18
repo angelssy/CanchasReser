@@ -69,9 +69,18 @@ fun NavGraph(
             }
         }
 
-        // CARRITO (sin barra)
-        composable("carrito") {
-            CarritoScreen(navController, carritoViewModel)
+        // CARRITO (con tipo de cancha)
+        composable(
+            route = "carrito/{tipo}",
+            arguments = listOf(navArgument("tipo") { type = NavType.StringType })
+        ) { entry ->
+            val tipo = entry.arguments?.getString("tipo") ?: "futbol"
+
+            CarritoScreen(
+                navController = navController,
+                carritoViewModel = carritoViewModel,
+                tipoCancha = tipo
+            )
         }
 
 

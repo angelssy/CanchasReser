@@ -83,7 +83,7 @@ fun ContactScreen(navController: NavController) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Phone, contentDescription = null, tint = Color.White)
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text("+56 9 5555 5555", fontSize = 18.sp, color = Color.White)
+                    Text("+56 9 5247 1235", fontSize = 18.sp, color = Color.White)
                 }
 
                 // -----------------------------------------------------
